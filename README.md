@@ -1,19 +1,19 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rqbctg/spec-writer/main/.github/images/spec-writer.png" alt="spec-writer" width="420"/>
+  <img src="https://raw.githubusercontent.com/raqeebspace/spec-writer/main/.github/images/spec-writer.png" alt="spec-writer" width="420"/>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@rqbctg/spec-writer">
-    <img src="https://img.shields.io/npm/v/@rqbctg/spec-writer?style=flat-square" alt="npm version">
+  <a href="https://www.npmjs.com/package/@raqeebspace/spec-writer">
+    <img src="https://img.shields.io/npm/v/@raqeebspace/spec-writer?style=flat-square" alt="npm version">
   </a>
-  <a href="https://github.com/rqbctg/spec-writer/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/rqbctg/spec-writer?style=flat-square" alt="License">
+  <a href="https://github.com/raqeebspace/spec-writer/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/raqeebspace/spec-writer?style=flat-square" alt="License">
   </a>
-  <a href="https://github.com/rqbctg/spec-writer/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/rqbctg/spec-writer/ci.yml?style=flat-square" alt="Build Status">
+  <a href="https://github.com/raqeebspace/spec-writer/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/raqeebspace/spec-writer/ci.yml?style=flat-square" alt="Build Status">
   </a>
   <a href="https://nodejs.org">
-    <img src="https://img.shields.io/node/v/@rqbctg/spec-writer?style=flat-square" alt="Node version">
+    <img src="https://img.shields.io/node/v/@raqeebspace/spec-writer?style=flat-square" alt="Node version">
   </a>
 </p>
 
@@ -46,27 +46,27 @@ The PRD is a living document rather than a one-off: it moves through six stages 
 **Any editor or agent, one command:**
 
 ```
-npx @rqbctg/spec-writer install          # detects Claude Code, Cursor, Copilot, AGENTS.md
-npx @rqbctg/spec-writer install all      # install into every one of them
-npx @rqbctg/spec-writer install claude --global
+npx @raqeebspace/spec-writer install          # detects Claude Code, Cursor, Copilot, AGENTS.md
+npx @raqeebspace/spec-writer install all      # install into every one of them
+npx @raqeebspace/spec-writer install claude --global
 ```
 
 **ChatGPT, Grok, Gemini** — nothing to install; they take a pasted prompt:
 
 ```
-npx @rqbctg/spec-writer copy prd         # to clipboard, paste and send your idea
-npx @rqbctg/spec-writer print all > spec-writer.md
+npx @raqeebspace/spec-writer copy prd         # to clipboard, paste and send your idea
+npx @raqeebspace/spec-writer print all > spec-writer.md
 ```
 
 ```
-npx @rqbctg/spec-writer list             # the seven documents
-npx @rqbctg/spec-writer --help
+npx @raqeebspace/spec-writer list             # the seven documents
+npx @raqeebspace/spec-writer --help
 ```
 
 **Claude Code** — or as a local plugin marketplace, if you prefer plugins to skills:
 
 ```
-/plugin marketplace add rqbctg/spec-writer
+/plugin marketplace add raqeebspace/spec-writer
 /plugin install spec-writer@spec-writer
 ```
 
@@ -202,7 +202,7 @@ Reports coverage (a parent ID with no child), orphans (a child citing a parent t
 ChatGPT, Grok, and Gemini can't write files, so the same chain runs by paste:
 
 ```
-npx @rqbctg/spec-writer copy prd        # full instructions to clipboard
+npx @raqeebspace/spec-writer copy prd        # full instructions to clipboard
 ```
 
 Paste, send your idea, and the document comes back in one fenced Markdown block with its filename named — save it as `docs/prd-writer/<slug>-prd-v0.0.1.md` yourself and attach it when you run the next stage.

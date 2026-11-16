@@ -124,11 +124,11 @@ function cmdInstall(args, opts) {
     targets = detect(opts.dir);
     if (!targets.length) {
       say(`\nNo assistant detected in ${c.d(tilde(opts.dir))}.\n`);
-      say(`  Name one explicitly:  ${c.b('npx @rqbctg/spec-writer install claude')}`);
-      say(`  Or all of them:       ${c.b('npx @rqbctg/spec-writer install all')}\n`);
+      say(`  Name one explicitly:  ${c.b('npx @raqeebspace/spec-writer install claude')}`);
+      say(`  Or all of them:       ${c.b('npx @raqeebspace/spec-writer install all')}\n`);
       say(`  Targets: ${Object.keys(TARGETS).join(', ')}`);
       say(`\n  For ChatGPT, Grok, or Gemini there is nothing to install — those take a`);
-      say(`  pasted prompt: ${c.b('npx @rqbctg/spec-writer copy prd')}\n`);
+      say(`  pasted prompt: ${c.b('npx @raqeebspace/spec-writer copy prd')}\n`);
       return;
     }
     say(`\nDetected: ${targets.map(t => TARGETS[t].label).join(', ')}`);
@@ -140,9 +140,9 @@ function cmdInstall(args, opts) {
 function cmdList() {
   say(`\n${c.b('spec-writer')} ${c.d('— seven connected specification documents')}\n`);
   for (const [name, desc] of MODULES) say(`  ${c.b(name.padEnd(22))} ${desc}`);
-  say(`\n  ${c.d('print a prompt:')} npx @rqbctg/spec-writer print prd`);
-  say(`  ${c.d('copy to clipboard:')} npx @rqbctg/spec-writer copy prd`);
-  say(`  ${c.d('install locally:')} npx @rqbctg/spec-writer install claude\n`);
+  say(`\n  ${c.d('print a prompt:')} npx @raqeebspace/spec-writer print prd`);
+  say(`  ${c.d('copy to clipboard:')} npx @raqeebspace/spec-writer copy prd`);
+  say(`  ${c.d('install locally:')} npx @raqeebspace/spec-writer install claude\n`);
 }
 
 function readPrompt(name) {
@@ -174,7 +174,7 @@ function cmdHelp() {
 ${c.b('spec-writer')} ${c.d('v' + PKG.version)} — MRD → BRD → PRD → Design Spec → SRS → TRD → QA Test Plan
 
 ${c.b('USAGE')}
-  npx @rqbctg/spec-writer <command> [args]
+  npx @raqeebspace/spec-writer <command> [args]
 
 ${c.b('COMMANDS')}
   ${c.b('list')}                    show the seven documents
@@ -196,10 +196,10 @@ ${c.b('OPTIONS')}
   --version     print the version
 
 ${c.b('EXAMPLES')}
-  npx @rqbctg/spec-writer install                  ${c.d('detect and install')}
-  npx @rqbctg/spec-writer install claude --global  ${c.d('all projects')}
-  npx @rqbctg/spec-writer copy prd                 ${c.d('paste into ChatGPT or Grok')}
-  npx @rqbctg/spec-writer print all > spec-writer.md
+  npx @raqeebspace/spec-writer install                  ${c.d('detect and install')}
+  npx @raqeebspace/spec-writer install claude --global  ${c.d('all projects')}
+  npx @raqeebspace/spec-writer copy prd                 ${c.d('paste into ChatGPT or Grok')}
+  npx @raqeebspace/spec-writer print all > spec-writer.md
 
 ${c.d('ChatGPT, Grok, and Gemini have nothing to install — they take a pasted')}
 ${c.d('prompt, or an uploaded file from dist/universal/. See PLATFORMS.md.')}

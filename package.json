@@ -1,5 +1,5 @@
 {
-  "name": "@rqbctg/spec-writer",
+  "name": "@raqeebspace/spec-writer",
   "version": "1.0.1",
   "description": "Software specification and product documentation chain: MRD, BRD, PRD, Design Spec, SRS, TRD, and QA Test Plan, built on ISO/IEC/IEEE 29148, 29119-3, 25010, BABOK v3, and WCAG 2.2. Installs into Claude Code, Cursor, Copilot, or any AGENTS.md agent, and prints paste-ready prompts for ChatGPT, Grok, and Gemini.",
   "keywords": [
@@ -26,13 +26,13 @@
     "agents-md",
     "chatgpt"
   ],
-  "homepage": "https://github.com/rqbctg/spec-writer#readme",
+  "homepage": "https://github.com/raqeebspace/spec-writer#readme",
   "bugs": {
-    "url": "https://github.com/rqbctg/spec-writer/issues"
+    "url": "https://github.com/raqeebspace/spec-writer/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rqbctg/spec-writer.git"
+    "url": "git+https://github.com/raqeebspace/spec-writer.git"
   },
   "license": "MIT",
   "author": "Rakib <rqb.ctg@gmail.com>",
