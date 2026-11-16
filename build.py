@@ -13,7 +13,7 @@ SRC   = os.path.join(ROOT, "skills")
 DIST  = os.path.join(ROOT, "dist")
 
 ORDER = ["spec-writer", "mrd-writer", "brd-writer", "prd-writer",
-         "design-spec-writer", "trd-writer", "qa-test-plan-writer"]
+         "design-spec-writer", "srs-writer", "trd-writer", "qa-test-plan-writer"]
 
 TITLES = {"spec-writer":        "Router — shared conventions",
           "mrd-writer":         "MRD — Market Requirements",
@@ -21,7 +21,8 @@ TITLES = {"spec-writer":        "Router — shared conventions",
           "prd-writer":         "PRD — Product Requirements",
           "design-spec-writer": "Design Spec",
           "trd-writer":         "TRD — Technical Requirements",
-          "qa-test-plan-writer":"QA Test Plan"}
+          "qa-test-plan-writer":"QA Test Plan",
+          "srs-writer":         "SRS — Software Requirements Specification"}
 
 # Documented instruction-field limit, in characters. ChatGPT, Grok, and Gemini
 # all cap at roughly this, so one stub serves all three. Sources change it
@@ -136,7 +137,7 @@ def build_universal(docs):
     for name, d in docs.items():
         write(f"universal/{name}.md", preamble(d) + "\n" + d["body"])
     combined = ["# spec-writer — complete instruction set\n",
-                "Six connected product documents: MRD, BRD, PRD, Design Spec, TRD, QA Test Plan. "
+                "Seven connected product documents: MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan. "
                 "Start with the router, then follow the module for the stage you're on.\n"]
     for name in ORDER:
         combined.append(f"\n\n---\n\n# MODULE: {name}\n\n> {docs[name]['description']}\n\n{docs[name]['body']}")
@@ -179,7 +180,7 @@ def build_agents(docs):
     files = {n: f"docs/{n}/<slug>-{suf}-v<version>.md" for n, suf in
              (("mrd-writer", "mrd"), ("brd-writer", "brd"), ("prd-writer", "prd"),
               ("design-spec-writer", "design-spec"), ("trd-writer", "trd"),
-              ("qa-test-plan-writer", "test-plan"))}
+              ("qa-test-plan-writer", "test-plan"), ("srs-writer", "srs"))}
     for i, name in enumerate([n for n in ORDER if n != "spec-writer"], 1):
         lines.append(f"| {i} | {TITLES[name]} | `skills/{name}/SKILL.md` | `{files[name]}` |")
     lines += ["",
@@ -195,14 +196,14 @@ def build_agents(docs):
               "Each skill writes into its own `docs/<skill-name>/` subfolder; `docs/` is created only when missing.",
               "- Version every file: the name ends in `-v<major>.<minor>.<patch>`, starting at `v0.0.1`. Read the "
               "highest version already in the folder and write the next one beside it — never overwrite. "
-              "Where more than one platform is declared, the PRD, design spec, TRD, and test plan are written "
+              "Where more than one platform is declared, the PRD, design spec, SRS, TRD, and test plan are written "
               "once per platform as `<slug>-<type>-<platform>-v<version>.md`.",
               "- Resolve upstream documents from the producing skill's folder, newest version and matching "
               "platform, and cite that exact filename in the header's `Upstream:` line.",
               "- Never invent a market size, budget, stakeholder, business rule, or limit. Gaps go in "
               "*Assumptions and Open Questions*.",
               "- Every numbered item carries a stable ID and cites its upstream parent "
-              "(`NEED-01` → `BR-01` → `PR-01` → `SCR-01`/`FR-01` → `TC-001`).",
+              "(`NEED-01` → `BR-01` → `PR-01` → `SCR-01`/`FR-01` → `API-01` → `TC-001`).",
               "- Stay in the document's layer: no feature lists in an MRD, no databases in a PRD, "
               "no endpoints in a Design Spec.",
               "- Every document opens with a *Revision History* table and ends with *Assumptions and Open "
@@ -225,7 +226,7 @@ def build_agents(docs):
     write("agents/copilot-instructions.md",
           "# Copilot instructions — spec-writer\n\n"
           "Product documentation lives in `docs/<skill-name>/`, one versioned file per document. When asked for "
-          "an MRD, BRD, PRD, Design Spec, TRD, or QA Test Plan, read the matching "
+          "an MRD, BRD, PRD, Design Spec, SRS, TRD, or QA Test Plan, read the matching "
           "`skills/<type>-writer/SKILL.md` in this repository and follow it exactly, including its "
           "template, ID scheme, versioning rule, and output contract.\n\n"
           + "\n".join(f"- **{docs[n]['name']}** — {docs[n]['description']}" for n in ORDER))
@@ -234,7 +235,7 @@ def build_agents(docs):
 # --------------------------------------------------------------------------- #
 CHATGPT_README = """# ChatGPT
 
-Two ways to install, depending on whether you want one assistant or six.
+Two ways to install, depending on whether you want one assistant or seven.
 
 ## One GPT for the whole chain (recommended)
 
@@ -350,24 +351,26 @@ def check():
 
 SUFFIX = {"mrd-writer": "mrd", "brd-writer": "brd", "prd-writer": "prd",
           "design-spec-writer": "design-spec", "trd-writer": "trd",
-          "qa-test-plan-writer": "test-plan"}
+          "qa-test-plan-writer": "test-plan", "srs-writer": "srs"}
 
 LABEL = {"mrd-writer": ["MRD"], "brd-writer": ["BRD"], "prd-writer": ["PRD"],
          "design-spec-writer": ["Design Spec", "design spec"],
-         "trd-writer": ["TRD"], "qa-test-plan-writer": ["QA Test Plan", "test plan"]}
+         "trd-writer": ["TRD"], "qa-test-plan-writer": ["QA Test Plan", "test plan"],
+         "srs-writer": ["SRS"]}
 
 # block name -> (start marker, end markers, skills that must carry it)
 SHARED = {
     "reading-upstream": ("1. **Look in the producing skill's folder**", ("\n## ",),
                          ["brd-writer", "prd-writer", "design-spec-writer", "trd-writer",
-                          "qa-test-plan-writer"]),
+                          "qa-test-plan-writer", "srs-writer"]),
     "versioning":       ("**Versioning.**", ("\n**The changelog is mandatory.**",),
                          list(SUFFIX)),
     "changelog":        ("**The changelog is mandatory.**",
                          ("\n**Per-platform documents.**", "\nWhatever the tier:"),
                          list(SUFFIX)),
     "per-platform":     ("**Per-platform documents.**", ("\nWhatever the tier:",),
-                         ["prd-writer", "design-spec-writer", "trd-writer", "qa-test-plan-writer"]),
+                         ["prd-writer", "design-spec-writer", "trd-writer", "qa-test-plan-writer",
+                          "srs-writer"]),
     "delivery-tiers":   ("Deliver by the highest tier the environment supports:",
                          ("\n**Versioning.**",), list(SUFFIX)),
     # Only the three bullets every stage shares: the tail continues past them

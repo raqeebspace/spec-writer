@@ -1,20 +1,21 @@
 ---
 name: trd-writer
-description: "Turns a PRD (or a rough feature idea) into a full Technical Requirements Document — also called a technical spec or system design doc — covering functional requirements, non-functional requirements, architecture, data model, APIs, and the testing/deployment/operations plan. Use when the user has a PRD and needs an engineering spec, or mentions a TRD, TSD, SDD, tech spec, or system design doc."
+description: "Turns an SRS (or, without one, a PRD or rough feature idea) into a full Technical Requirements Document — also called a technical spec or system design doc — covering functional requirements, non-functional requirements, architecture, data model, APIs, and the testing/deployment/operations plan. Use when the user has an SRS or PRD and needs an engineering spec, or mentions a TRD, TSD, SDD, tech spec, or system design doc."
 ---
 
 # TRD Writer
 
-Stage 5 of the spec-writer chain. Reads a PRD and, where one exists, a Design Spec; feeds `qa-test-plan-writer`.
+Stage 6 of the spec-writer chain. Reads an SRS, the PRD behind it, and, where one exists, a Design Spec; feeds `qa-test-plan-writer`.
 
-Turn product requirements into a rigorous engineering blueprint: the document that translates the PRD's "what" into a constructible "how," so every engineer, QA lead, and reviewer works from one source of truth.
+Turn software requirements into a rigorous engineering blueprint: the document that translates the SRS's "what" into a constructible "how," so every engineer, QA lead, and reviewer works from one source of truth.
 
 ## Reading the upstream documents
 
-This stage reads the PRD and, where one exists, the design spec. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
+This stage reads the SRS, the PRD, and, where one exists, the design spec. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
 
 | Upstream | Where it lives |
 |---|---|
+| SRS | `docs/srs-writer/<slug>-srs-v*.md` |
 | PRD | `docs/prd-writer/<slug>-prd-v*.md` |
 | design spec | `docs/design-spec-writer/<slug>-design-spec-v*.md` |
 
@@ -28,9 +29,11 @@ Outside a repository — a pasted document, an attachment, or a document drafted
 
 ## Step 1 — Get the source material
 
-Resolve the PRD by the rules above — highest version in `docs/prd-writer/`, matching platform, exact filename cited. A pasted description or a PRD drafted earlier in this conversation counts. If there is no PRD at all, work from whatever the user describes and state explicitly in the header that it's derived from an informal brief.
+Resolve the SRS and the PRD by the rules above — highest version in each folder, matching platform, exact filenames cited. A pasted document or one drafted earlier in this conversation counts.
 
-Read the whole PRD before drafting. Pull out the problem statement, target users, user stories and requirements (`PR-xx`), success metrics, stated constraints (deadline, budget, platforms), and everything the PRD explicitly excludes.
+The SRS is the primary input: its `FR-xx` and `NFR-xx` are the requirements this document designs for, under the same IDs. Read it whole — requirements, acceptance criteria, Given/When/Then examples, external interfaces, business rules, database and regulatory requirements, and the FMEA table. Read the PRD for context the SRS cites: problem statement, users, `PR-xx` stories, `MET-xx` metrics, and exclusions.
+
+If there is no SRS, say so and offer to run `srs-writer` first. If the user wants to go on without it, derive the requirements from the PRD here, number them `FR-xx` and `NFR-xx`, and record in Assumptions that the SRS stage was skipped. If there is no PRD either, work from whatever the user describes and state explicitly in the header that it's derived from an informal brief.
 
 If a Design Spec exists, read it too — its screens, states, and validation rules are functional requirements you'd otherwise have to re-derive, and its `SCR-xx` IDs are worth citing alongside the `PR-xx` ones.
 
@@ -38,20 +41,18 @@ If the project has an existing codebase, read enough of it to ground the archite
 
 **Scope and platforms:** if the upstream document declares them, carry both into this document's header block verbatim and don't ask again. If no upstream document exists and you're the first in the chain, ask the user once — scope (product, feature, or change) and target platforms (web, iOS, Android, macOS, Windows, Linux, API, or undecided) — in a single batched question with a recommendation attached, exactly as the `mrd-writer` scope-and-platforms question describes. Record the answer; never pick silently.
 
-## Step 2 — Fill the technical gaps the PRD won't have
+## Step 2 — Fill the technical gaps the SRS won't have
 
-A PRD rarely specifies the engineering detail a TRD needs. Identify what's missing across these categories and ask the user — batch the questions, don't drip them one at a time:
+An SRS states quality targets but not the engineering detail a TRD needs. Identify what's missing across these categories and ask the user — batch the questions, don't drip them one at a time:
 
 - Tech stack and existing systems this integrates with
 - Scale targets: current and expected traffic/data volume, growth horizon
-- Performance targets — latency, throughput — where not implied by the PRD
-- Security and compliance: auth model, data sensitivity, applicable regulations
-- Availability target and acceptable downtime
+- Performance, security, and availability targets — only where the SRS leaves them open; otherwise take the SRS's `NFR-xx` as given
 - Deployment environment and constraints: cloud provider, on-prem, browser support bar, mobile and desktop OS versions, budget ceiling
 
 If the user is unavailable or waves this off, state reasonable assumptions explicitly in the Assumptions subsection rather than baking in silent defaults.
 
-Platform targets come from the PRD header block, which carries them from MRD Section 5 — don't re-decide them here. What each one adds to this document belongs in **Constraints**, not Assumptions, because these are hard limits rather than beliefs:
+Platform targets come from the SRS header block, which carries them from the PRD and MRD Section 5 — don't re-decide them here. What each one adds to this document belongs in **Constraints**, not Assumptions, because these are hard limits rather than beliefs:
 
 - **Web** — the browser and version support matrix, and what degrades outside it; bundle-size and Core Web Vitals budgets; CDN and caching strategy; CSP and other security headers; whether SSR, SSG, or SPA, and why.
 - **Mobile** — minimum OS versions per platform and the API deprecations that follow; binary size limits; the store review process as a release-path dependency; how OTA or forced updates work; background execution and battery limits; offline storage and sync conflict resolution; per-platform permission models.
@@ -73,8 +74,8 @@ For a feature in an existing system, the architecture section isn't a system des
 
 Work in this order; each stage depends on the last.
 
-1. **The "what"** — translate the PRD's requirements into concrete functional requirements (`FR-xx`) and acceptance criteria.
-2. **The "how well"** — derive non-functional requirements (`NFR-xx`) from the PRD's `MET-xx` metrics and guardrails, its Section 8 quality requirements (which carry `PR-xx` IDs so they can be cited directly), and Step 2's answers: performance, scalability, security, availability, maintainability.
+1. **The "what"** — carry every SRS `FR-xx` under the same ID and refine it into technical terms: the exact endpoint, validation rule, and status code its acceptance criteria imply. A technical requirement the SRS doesn't hold — a migration, a job, a cache invalidation — takes the next `FR-xx` in the sequence and cites the SRS requirement it serves.
+2. **The "how well"** — carry every SRS `NFR-xx` under the same ID, with its number, and add the technical NFRs it implies — scalability, maintainability, observability — from Step 2's answers.
 3. **The "how"** — design the architecture and choose the stack, justifying every non-obvious choice against a specific NFR.
 4. **The "how to run it"** — define testing strategy, monitoring and alerting, and the deployment/rollback plan.
 
@@ -93,7 +94,7 @@ Read `references/template.md` in this skill folder before drafting, and follow i
 - Every non-trivial technology or architecture choice states the NFR it serves and its trade-off.
 - Non-Goals is present and specific, not a placeholder.
 - Assumptions, Constraints, and Dependencies are separated, not lumped together.
-- Every `FR-xx` cites the `PR-xx` it implements; anything with no real parent carries `[no upstream — new in this document]` and an Assumptions entry, rather than being quietly included.
+- Every SRS `FR-xx` and `NFR-xx` appears here under the same ID, or Assumptions says why it was left out. Every new technical `FR-xx` cites the SRS requirement it serves; anything with no real parent carries `[no upstream — new in this document]` and an Assumptions entry, rather than being quietly included.
 - Nothing in the document re-litigates business justification — that's the BRD's job.
 - Every NFR names a quality characteristic, a number, and a verification method.
 - Every functional requirement is singular — no requirement containing "and" that could fail in two ways.
@@ -117,7 +118,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-trd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-trd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/trd-writer/<slug>-trd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/trd-writer/<slug>-trd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 

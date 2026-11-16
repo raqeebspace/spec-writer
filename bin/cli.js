@@ -18,8 +18,9 @@ const MODULES = [
   ['brd-writer',          '2. Business Requirements Document'],
   ['prd-writer',          '3. Product Requirements Document'],
   ['design-spec-writer',  '4. Design Specification'],
-  ['trd-writer',          '5. Technical Requirements Document'],
-  ['qa-test-plan-writer', '6. QA Test Plan'],
+  ['srs-writer',          '5. Software Requirements Specification'],
+  ['trd-writer',          '6. Technical Requirements Document'],
+  ['qa-test-plan-writer', '7. QA Test Plan'],
 ];
 const NAMES = MODULES.map(([n]) => n);
 
@@ -72,7 +73,7 @@ const TARGETS = {
           copyFile(path.join(refs, f), path.join(base, name, 'references', f), opts.force, base);
         }
       }
-      if (n) say(`\n  ${c.d('Restart Claude Code, then ask for any of the six documents.')}`);
+      if (n) say(`\n  ${c.d('Restart Claude Code, then ask for any of the seven documents.')}`);
     },
   },
   cursor: {
@@ -137,7 +138,7 @@ function cmdInstall(args, opts) {
 }
 
 function cmdList() {
-  say(`\n${c.b('spec-writer')} ${c.d('— six connected specification documents')}\n`);
+  say(`\n${c.b('spec-writer')} ${c.d('— seven connected specification documents')}\n`);
   for (const [name, desc] of MODULES) say(`  ${c.b(name.padEnd(22))} ${desc}`);
   say(`\n  ${c.d('print a prompt:')} npx @rqbctg/spec-writer print prd`);
   say(`  ${c.d('copy to clipboard:')} npx @rqbctg/spec-writer copy prd`);
@@ -170,13 +171,13 @@ function cmdCopy(args) {
 
 function cmdHelp() {
   say(`
-${c.b('spec-writer')} ${c.d('v' + PKG.version)} — MRD → BRD → PRD → Design Spec → TRD → QA Test Plan
+${c.b('spec-writer')} ${c.d('v' + PKG.version)} — MRD → BRD → PRD → Design Spec → SRS → TRD → QA Test Plan
 
 ${c.b('USAGE')}
   npx @rqbctg/spec-writer <command> [args]
 
 ${c.b('COMMANDS')}
-  ${c.b('list')}                    show the six documents
+  ${c.b('list')}                    show the seven documents
   ${c.b('install')} [target...]     install into this project (auto-detects if omitted)
   ${c.b('print')} <doc|all>         write a paste-ready prompt to stdout
   ${c.b('copy')} <doc|all>          copy a paste-ready prompt to the clipboard

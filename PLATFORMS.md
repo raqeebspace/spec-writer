@@ -25,17 +25,17 @@ The CLI is dependency-free — Node 18+ and nothing else — so `npx` starts imm
 
 Every module carries the same three-tier output contract, so the deliverable is always a Markdown document no matter where it runs:
 
-1. **Filesystem available** — write `docs/<skill-name>/<slug>-<type>-v<version>.md` and report the path; `docs/` is created only when missing, each skill owns its own subfolder, and the version is bumped from the highest file already in that folder (first write is `v0.0.1`). With more than one platform declared, the PRD, design spec, TRD, and test plan are written once per platform as `<slug>-<type>-<platform>-v<version>.md`. Claude Code, Cursor, Copilot, Gemini CLI, Codex.
+1. **Filesystem available** — write `docs/<skill-name>/<slug>-<type>-v<version>.md` and report the path; `docs/` is created only when missing, each skill owns its own subfolder, and the version is bumped from the highest file already in that folder (first write is `v0.0.1`). With more than one platform declared, the PRD, design spec, SRS, TRD, and test plan are written once per platform as `<slug>-<type>-<platform>-v<version>.md`. Claude Code, Cursor, Copilot, Gemini CLI, Codex.
 2. **Files or a document surface, no repo** — produce a downloadable file, canvas, or doc named `<slug>-<type>.md`. ChatGPT with Code Interpreter, Claude artifacts, Gemini Canvas.
 3. **Chat only** — the entire document in one fenced Markdown block, filename named, ready to paste into a `.md`. Grok, plain ChatGPT, anything embedded.
 
-The filename is identical in all three tiers, which is what keeps a six-document set coherent when the stages are produced on different platforms — an MRD written in Grok and a PRD written in Claude Code still chain together by `NEED-01` → `BR-01` → `PR-01`.
+The filename is identical in all three tiers, which is what keeps a seven-document set coherent when the stages are produced on different platforms — an MRD written in Grok and a PRD written in Claude Code still chain together by `NEED-01` → `BR-01` → `PR-01`.
 
 ## Degrading gracefully
 
 - **No web search** (most chat-only setups): the MRD module says so in its Market Research section and marks every research-dependent claim unverified, rather than inventing figures.
 - **No design tool access**: the Design Spec module specifies components in text and flags what still needs visual design.
-- **No repo access**: the TRD module works from the PRD alone and records what it couldn't check against the codebase as an assumption.
+- **No repo access**: the TRD module works from the SRS alone and records what it couldn't check against the codebase as an assumption.
 - **Small instruction fields** (8000 chars on Custom GPTs, Gems, and Grok custom instructions): use the `dist/instructions/` stub and upload the matching `dist/universal/` file as knowledge, rather than pasting a whole module. Every stub is under 1700 characters.
 
 ## Scope
@@ -52,6 +52,7 @@ Each stage is structured on the recognised standard for its document type, so th
 | BRD | BABOK v3 (IIBA); ISO/IEC/IEEE 29148:2018 BRS — requirement types, RACI, risk register, sign-off |
 | PRD | INVEST user stories, Given/When/Then acceptance criteria, MoSCoW prioritization |
 | Design Spec | WCAG 2.2 AA; W3C ARIA Authoring Practices |
+| SRS | ISO/IEC/IEEE 29148:2018 §9.6 SRS content; EARS requirement syntax; ISO/IEC 25010:2023; IEC 60812:2018 FMEA |
 | TRD | ISO/IEC/IEEE 29148:2018 requirement form and quality; ISO/IEC 25010:2023 quality model |
 | QA Test Plan | ISO/IEC/IEEE 29119-3:2021 (superseded IEEE 829-2008) |
 

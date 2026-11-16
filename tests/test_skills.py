@@ -4,7 +4,7 @@
 build.py already proves dist/ is fresh and that the copied output-contract
 blocks still match each other. These are the checks above that: that each
 SKILL.md is loadable by an agent, that the conventions the router defines are
-the ones the six stages actually use, and that an install carries everything a
+the ones the stages actually use, and that an install carries everything a
 skill points at. Run: python3 tests/test_skills.py
 """
 import json, os, re, subprocess, sys, tempfile
@@ -13,11 +13,11 @@ ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILLS = os.path.join(ROOT, "skills")
 ROUTER = "spec-writer"
 STAGES = ["mrd-writer", "brd-writer", "prd-writer",
-          "design-spec-writer", "trd-writer", "qa-test-plan-writer"]
+          "design-spec-writer", "trd-writer", "qa-test-plan-writer", "srs-writer"]
 
 SUFFIX = {"mrd-writer": "mrd", "brd-writer": "brd", "prd-writer": "prd",
           "design-spec-writer": "design-spec", "trd-writer": "trd",
-          "qa-test-plan-writer": "test-plan"}
+          "qa-test-plan-writer": "test-plan", "srs-writer": "srs"}
 
 HEADER = ["Owner", "Date", "Version", "Status", "Scope", "Platforms",
           "Upstream", "Downstream"]
@@ -26,7 +26,7 @@ EXTRA_HEADER = {"prd-writer": {"Stage"}, "design-spec-writer": {"Design file"}}
 # The router's Traceability IDs block is the whole vocabulary. A stage that
 # mints a prefix outside it has invented an ID scheme nobody downstream reads.
 ID_PREFIXES = {"NEED", "GOAL", "BR", "R", "PR", "MET", "DEC", "FLOW", "SCR",
-               "CMP", "FR", "NFR", "API", "REQ", "TC"}
+               "CMP", "FR", "NFR", "API", "REQ", "TC", "FM"}
 
 MARKERS = ["Not applicable — ", "Insufficient evidence — ", "Not yet — stage "]
 

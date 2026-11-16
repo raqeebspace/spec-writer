@@ -1,11 +1,11 @@
 ---
 name: spec-writer
-description: "Router and shared conventions for the product documentation chain — MRD, BRD, PRD, Design Spec, TRD, QA Test Plan. Use when the user wants product/project documentation but hasn't named a specific document type, asks which document they need, wants several documents produced in sequence, or asks to check that an existing set of docs is consistent and traceable."
+description: "Router and shared conventions for the product documentation chain — MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan. Use when the user wants product/project documentation but hasn't named a specific document type, asks which document they need, wants several documents produced in sequence, or asks to check that an existing set of docs is consistent and traceable."
 ---
 
 # Spec Writer
 
-The entry point for a six-document chain. Each document answers one question, at one altitude, for one audience — and each is generated from the one above it so a product can be traced from market opportunity all the way to test coverage.
+The entry point for a seven-document chain. Each document answers one question, at one altitude, for one audience — and each is generated from the one above it so a product can be traced from market opportunity all the way to test coverage.
 
 | # | Document | Module | Answers | Primary audience |
 |---|---|---|---|---|
@@ -13,8 +13,9 @@ The entry point for a six-document chain. Each document answers one question, at
 | 2 | BRD — Business Requirements | `brd-writer` | What business outcome does this support, and what will it take? | Sponsors, approvers, finance |
 | 3 | PRD — Product Requirements | `prd-writer` | What should the product actually do? | Product, design, engineering |
 | 4 | Design Spec | `design-spec-writer` | What does the user see and do, screen by screen? | Design, frontend, QA |
-| 5 | TRD — Technical Requirements | `trd-writer` | How will engineering build it? | Engineering, architecture |
-| 6 | QA Test Plan | `qa-test-plan-writer` | How do we prove it works? | QA, automation |
+| 5 | SRS — Software Requirements Specification | `srs-writer` | What shall the software do, testably, and under what constraints? | Engineering, QA, approvers, clients |
+| 6 | TRD — Technical Requirements | `trd-writer` | How will engineering build it? | Engineering, architecture |
+| 7 | QA Test Plan | `qa-test-plan-writer` | How do we prove it works? | QA, automation |
 
 ## Routing
 
@@ -26,9 +27,10 @@ First settle the scope (see below), because it decides how many stages even appl
 - An MRD, or a project that's already been decided on but needs sponsor/budget sign-off → **`brd-writer`**.
 - A validated problem and a decision to build → **`prd-writer`**.
 - A PRD with user-facing surface area (any UI at all) → **`design-spec-writer`**.
-- A PRD, with or without a design spec → **`trd-writer`**.
-- A PRD, design spec, or TRD, and a need for coverage → **`qa-test-plan-writer`**.
-- "Give me the full set" / "document this idea end to end" → run the chain in order, stopping after each document to confirm before spending effort on the next. Do not silently generate six documents from one sentence; each one inherits the previous one's assumptions, and a wrong turn at the MRD stage poisons all five below it.
+- A PRD, with or without a design spec, and a need for testable software requirements → **`srs-writer`**.
+- An SRS → **`trd-writer`**. With only a PRD, run `srs-writer` first; the TRD carries the SRS's requirement IDs.
+- A PRD, design spec, SRS, or TRD, and a need for coverage → **`qa-test-plan-writer`**.
+- "Give me the full set" / "document this idea end to end" → run the chain in order, stopping after each document to confirm before spending effort on the next. Do not silently generate seven documents from one sentence; each one inherits the previous one's assumptions, and a wrong turn at the MRD stage poisons all six below it.
 - A feature being added to something that already exists → **`prd-writer`**, at feature scope, inheriting the product's existing documents. Don't start at the MRD unless the feature opens a new market segment.
 - "Review / check my docs" → read what exists, then report against **Traceability** and **Layer discipline** below.
 
@@ -45,6 +47,7 @@ The chain works at three scopes. Pick one before routing — running product-sca
 | BRD | Full | Only if it needs its own funding, headcount, or sponsor sign-off | Skip |
 | PRD | Full | **Start here.** Scoped to the feature, inheriting product context | One page: problem, requirements, acceptance criteria |
 | Design Spec | Full | New and changed screens only, plus the states they add to existing ones | Only if the UI changes |
+| SRS | Full | The feature's requirements only, under namespaced IDs, plus FMEA for what it adds | Skip — the PRD's acceptance criteria are enough |
 | TRD | Full | The delta: what's added, what's modified, what the blast radius is | Only if the design is non-obvious |
 | QA Test Plan | Full | New cases, plus regression scope for what the change can reach | Cases for the change, plus its regression scope |
 
@@ -62,7 +65,7 @@ If the user hands you a feature but wants the full chain anyway, produce it — 
 
 ## Shared conventions
 
-Every stage in this chain follows these. They are what make six documents one system instead of six unrelated files.
+Every stage in this chain follows these. They are what make seven documents one system instead of seven unrelated files.
 
 ### Layer discipline
 
@@ -74,7 +77,8 @@ Each document stays at its own altitude. The most common failure in requirement 
 | BRD | Outcomes, scope, cost, sign-off | System behavior → PRD/TRD |
 | PRD | Product behavior, requirements, metrics | Architecture, stack → TRD |
 | Design Spec | Screens, flows, states, content | Data models, endpoints → TRD |
-| TRD | Architecture, APIs, data, NFRs | Business justification → BRD |
+| SRS | Testable requirements, interfaces, constraints, FMEA | Architecture, schema, endpoints → TRD |
+| TRD | Architecture, APIs, data, technical refinement of requirements | Business justification → BRD |
 | QA Test Plan | Cases, coverage, risk | New business rules → question log |
 
 When you catch a sentence in the wrong layer, move it or cut it — and if it's genuinely new information, note it for the document where it belongs.
@@ -94,12 +98,16 @@ PRD   PR-01     product requirement           → traces to BR-xx (or NEED-xx)
 DS    FLOW-01   user flow                     → traces to PR-xx
       SCR-01    screen / surface              → traces to PR-xx
       CMP-01    component                     → traces to SCR-xx
-TRD   FR-01     functional requirement        → traces to PR-xx (and SCR-xx where a design spec exists)
+SRS   FR-01     functional requirement        → traces to PR-xx (and SCR-xx where a design spec exists)
       NFR-01    non-functional requirement    → traces to MET-xx, a PR-xx, or a BRD constraint
+      FM-01     FMEA failure mode             → document-local; its mitigation cites an FR-xx or NFR-xx
+TRD   FR-01     (carried from the SRS, same ID; new technical FR-xx trace to an SRS FR-xx)
       API-01    endpoint / interface          → traces to FR-xx
 QA    REQ-01    derived requirement           → no upstream; flags a gap in the source document
       TC-001    test case                     → traces to any ID above
 ```
+
+The SRS mints `FR-xx` and `NFR-xx`; the TRD refines them under the same IDs, so one ID still means one thing across the set.
 
 Never invent a parent ID. If an item has no upstream parent, mark it `[no upstream — new in this document]` and add it to Assumptions and Open Questions. Orphans are usually either a genuine gap in the parent doc or scope creep, and both are worth surfacing.
 
@@ -127,7 +135,7 @@ A document is built from a file, not from the conversation, so resolving that fi
 1. **The producing skill's folder is the source** — `docs/prd-writer/` for a PRD, `docs/trd-writer/` for a TRD, or the project's own documentation directory where one replaces `docs/`.
 2. **Highest version wins.** Compare `v<major>.<minor>.<patch>` numerically (`v0.0.10` is newer than `v0.0.9`). Read an older version only when the user asks for it by name, and say so in the header block.
 3. **Platform matches platform.** A per-platform document is built from its own platform's upstream file; where the upstream is a single file with no platform token, every platform reads that one.
-4. **The exact filename goes in `**Upstream:**`** — version and platform included. A stage reading several documents lists them all, comma-separated, one filename each: the TRD cites its PRD and design spec, the test plan cites all three. A missing one reads as "this document was written without it". Combined with rule 2, that is what makes the staleness check below mechanical rather than a judgement call: compare the cited filename against the newest file in the upstream folder.
+4. **The exact filename goes in `**Upstream:**`** — version and platform included. A stage reading several documents lists them all, comma-separated, one filename each: the SRS cites its PRD and design spec, the TRD cites its SRS, PRD, and design spec, the test plan cites all four. A missing one reads as "this document was written without it". Combined with rule 2, that is what makes the staleness check below mechanical rather than a judgement call: compare the cited filename against the newest file in the upstream folder.
 
 On a re-run, the document's own previous version records which upstream version it was built from. Diff the newest upstream against that one and change only what the difference requires, rather than redrafting from scratch.
 
@@ -227,10 +235,11 @@ Each stage is structured on the recognised standard for its document type, so th
 | BRD | BABOK v3 (IIBA); ISO/IEC/IEEE 29148:2018 BRS | Requirement classification, RACI, risk register, sign-off |
 | PRD | INVEST stories, Given/When/Then, MoSCoW | Product-layer requirements and acceptance criteria |
 | Design Spec | WCAG 2.2 AA, W3C ARIA Authoring Practices | States, components, accessibility, localization |
+| SRS | ISO/IEC/IEEE 29148:2018 §9.6 (superseded IEEE 830); EARS; ISO/IEC 25010:2023; IEC 60812:2018 FMEA | SRS content, requirement syntax, NFR classification, risk analysis |
 | TRD | ISO/IEC/IEEE 29148:2018; ISO/IEC 25010:2023 | Requirement form and quality; NFR classification |
 | QA Test Plan | ISO/IEC/IEEE 29119-3:2021 (superseded IEEE 829) | Plan structure, entry/exit, suspension/resumption |
 
-Two conventions run across all six. Requirements use the **29148** sentence form — *[condition] [subject] [action] [object] [constraint]* — with *shall* binding, *should* recommended, *may* optional. And every requirement is judged against the nine **29148** quality characteristics: necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, conforming.
+Two conventions run across all seven. Requirements use the **29148** sentence form — *[condition] [subject] [action] [object] [constraint]* — with *shall* binding, *should* recommended, *may* optional. And every requirement is judged against the nine **29148** quality characteristics: necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, conforming.
 
 ## Platforms
 
@@ -250,10 +259,11 @@ Deliver by the highest tier the environment supports: **(1)** write to the files
 | 2 | `brd-writer` | `docs/brd-writer/<slug>-brd-v<version>.md` |
 | 3 | `prd-writer` | `docs/prd-writer/<slug>-prd-v<version>.md`, or one per platform |
 | 4 | `design-spec-writer` | `docs/design-spec-writer/<slug>-design-spec-v<version>.md`, or one per platform |
-| 5 | `trd-writer` | `docs/trd-writer/<slug>-trd-v<version>.md`, or one per platform |
-| 6 | `qa-test-plan-writer` | `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`, or one per platform |
+| 5 | `srs-writer` | `docs/srs-writer/<slug>-srs-v<version>.md`, or one per platform |
+| 6 | `trd-writer` | `docs/trd-writer/<slug>-trd-v<version>.md`, or one per platform |
+| 7 | `qa-test-plan-writer` | `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`, or one per platform |
 
-Each skill owns one subfolder of `docs/`, named after the skill, so a product's six documents are grouped by the stage that produced them. Use one consistent `<slug>` across all six files for a given product — that's what makes the set readable as a set.
+Each skill owns one subfolder of `docs/`, named after the skill, so a product's seven documents are grouped by the stage that produced them. Use one consistent `<slug>` across all seven files for a given product — that's what makes the set readable as a set.
 
 Where a filesystem exists, create `docs/` only when it is missing; if it already exists, write into it untouched. Create the skill's subfolder inside it the same way. Where the project already has a documentation directory (`documentation/`, `doc/`, a docs site's content folder), use that instead of creating `docs/`, with the same per-skill subfolder inside it.
 

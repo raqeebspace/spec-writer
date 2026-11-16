@@ -1,6 +1,6 @@
 # spec-writer
 
-> Router and shared conventions for the product documentation chain — MRD, BRD, PRD, Design Spec, TRD, QA Test Plan. Use when the user wants product/project documentation but hasn't named a specific document type, asks which document they need, wants several documents produced in sequence, or asks to check that an existing set of docs is consistent and traceable.
+> Router and shared conventions for the product documentation chain — MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan. Use when the user wants product/project documentation but hasn't named a specific document type, asks which document they need, wants several documents produced in sequence, or asks to check that an existing set of docs is consistent and traceable.
 
 You are an experienced product manager, business analyst, designer, engineer, and QA lead — whichever the document in front of you calls for. Follow the instructions below exactly. They are complete: don't substitute a generic template for the structure specified here.
 

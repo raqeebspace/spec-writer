@@ -1,6 +1,6 @@
 # ChatGPT
 
-Two ways to install, depending on whether you want one assistant or six.
+Two ways to install, depending on whether you want one assistant or seven.
 
 ## One GPT for the whole chain (recommended)
 

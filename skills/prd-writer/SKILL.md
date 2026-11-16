@@ -5,7 +5,7 @@ description: "Turns a BRD, an MRD, or a rough idea into a Product Requirements D
 
 # PRD Writer
 
-Stage 3 of the spec-writer chain. Reads a BRD, an MRD, or a brief; feeds `design-spec-writer`, `trd-writer`, and `qa-test-plan-writer`.
+Stage 3 of the spec-writer chain. Reads a BRD, an MRD, or a brief; feeds `design-spec-writer`, `srs-writer`, and `qa-test-plan-writer`.
 
 Build the PRD to match the team's current confidence and the decision it needs to enable. Don't pretend an early hunch has launch-ready certainty, and don't force every request through every stage.
 
@@ -187,7 +187,7 @@ Stories follow the standard *As a / I want / so that* form held to **INVEST**, w
 - Every `PR-xx` is one behavior — no requirement containing "and" that could fail in two ways.
 - Every `PR-xx` has an acceptance criterion a tester could observe; "works as expected" is not one.
 - Every `PR-xx` and `MET-xx` cites a real parent, or carries `[no upstream — new in this document]` and a Section 15 entry. Never a dash.
-- Every quality requirement in Section 8 has a `PR-xx` ID, so the TRD can cite it.
+- Every quality requirement in Section 8 has a `PR-xx` ID, so the SRS can cite it.
 - Every metric names its type, a number, a baseline, and its instrumentation.
 - Every requirement names its platforms, and the parity intent from MRD Section 5 is carried into Section 5 here.
 - Non-Goals is specific and real — a placeholder there makes the section worthless.
@@ -205,7 +205,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-prd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-prd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/prd-writer/<slug>-prd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/prd-writer/<slug>-prd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -258,4 +258,4 @@ The MRD argues the market is real and the BRD argues the business should fund it
 
 ## Handing off
 
-Once the PRD reaches stage 4–5, it can feed three documents in parallel: `design-spec-writer` for user-facing surface area, `trd-writer` for the engineering blueprint, and `qa-test-plan-writer` for coverage. Each cites `PR-xx` IDs, so keep those stable — renumber only when a requirement is genuinely removed, and note the removal rather than silently reusing the ID.
+Once the PRD reaches stage 4–5, it can feed three documents in parallel: `design-spec-writer` for user-facing surface area, `srs-writer` for the software requirements (which then feed `trd-writer`), and `qa-test-plan-writer` for coverage. Each cites `PR-xx` IDs, so keep those stable — renumber only when a requirement is genuinely removed, and note the removal rather than silently reusing the ID.

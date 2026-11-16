@@ -94,7 +94,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-mrd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-mrd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/mrd-writer/<slug>-mrd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/mrd-writer/<slug>-mrd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 

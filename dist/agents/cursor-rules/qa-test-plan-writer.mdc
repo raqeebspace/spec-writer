@@ -1,28 +1,29 @@
 ---
-description: Turns a PRD, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
+description: Turns a PRD, SRS, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
 alwaysApply: false
 ---
 
 # qa-test-plan-writer
 
-> Turns a PRD, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
+> Turns a PRD, SRS, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
 
 You are an experienced product manager, business analyst, designer, engineer, and QA lead — whichever the document in front of you calls for. Follow the instructions below exactly. They are complete: don't substitute a generic template for the structure specified here.
 
 # QA Test Plan Writer
 
-Stage 6 of the spec-writer chain. Reads a PRD, a Design Spec, and/or a TRD.
+Stage 7 of the spec-writer chain. Reads a PRD, a Design Spec, an SRS, and/or a TRD.
 
 Turn requirements into a reviewable, traceable test plan. **The source document is evidence, not an oracle**: surface ambiguity and missing rules as explicit questions instead of inventing acceptance criteria to fill gaps. Work the stages in order — don't skip straight to writing cases from a raw PRD.
 
 ## Reading the upstream documents
 
-This stage reads the PRD, design spec, and TRD. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
+This stage reads the PRD, design spec, SRS, and TRD. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
 
 | Upstream | Where it lives |
 |---|---|
 | PRD | `docs/prd-writer/<slug>-prd-v*.md` |
 | design spec | `docs/design-spec-writer/<slug>-design-spec-v*.md` |
+| SRS | `docs/srs-writer/<slug>-srs-v*.md` |
 | TRD | `docs/trd-writer/<slug>-trd-v*.md` |
 
 1. **Look in the producing skill's folder**, or in the project's documentation directory where one replaces `docs/`.
@@ -39,7 +40,7 @@ Read every available source and extract **atomic requirements** — one behavior
 
 **Scope and platforms:** if the upstream document declares them, carry both into this document's header block verbatim and don't ask again. If no upstream document exists and you're the first in the chain, ask the user once — scope (product, feature, or change) and target platforms (web, iOS, Android, macOS, Windows, Linux, API, or undecided) — in a single batched question with a recommendation attached, exactly as the `mrd-writer` scope-and-platforms question describes. Record the answer; never pick silently.
 
-Where upstream documents already carry IDs, **reuse them rather than renumbering**: `PR-xx` and `MET-xx` from the PRD, `FR-xx` and `NFR-xx` from the TRD, `SCR-xx`/`FLOW-xx`/`CMP-xx` from the design spec. Mint a new `REQ-xx` only for a behavior you had to derive that has no upstream ID, and flag each one — a derived requirement is usually a gap in the source document worth reporting.
+Where upstream documents already carry IDs, **reuse them rather than renumbering**: `PR-xx` and `MET-xx` from the PRD, `FR-xx` and `NFR-xx` from the SRS (carried under the same IDs in the TRD), `FM-xx` failure modes from the SRS as risk input, `SCR-xx`/`FLOW-xx`/`CMP-xx` from the design spec. Mint a new `REQ-xx` only for a behavior you had to derive that has no upstream ID, and flag each one — a derived requirement is usually a gap in the source document worth reporting.
 
 Split compound statements: "a verified buyer can cancel a processing order and receives email confirmation" becomes separate requirements for authorization, eligible state, cancellation outcome, and notification, because each can fail independently.
 
@@ -185,7 +186,7 @@ This stage is this skill's quality bar. Deterministic checks, not judgment calls
 - No case with zero steps or a missing expected result.
 - Scan for banned vague-oracle phrases ("works correctly," "as expected," "appropriate," "successful," "user-friendly") and flag or rewrite.
 - No contradictory preconditions across cases claiming the same requirement.
-- Every NFR from the TRD has a case testing its **number**, not its category.
+- Every NFR from the SRS and TRD has a case testing its **number**, not its category.
 - Every `MET-xx` from the PRD has an instrumentation case, and every guardrail metric has a case asserting its limit.
 - No instrumentation case asserts "an event fires" without naming the event and the properties it must carry.
 
@@ -210,7 +211,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-test-plan-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-test-plan-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -264,14 +265,14 @@ Use this section structure. Adapt depth to how much there is to say, but never d
 **Status:** Draft | In review | Approved | Superseded
 **Scope:** Product | Feature | Change
 **Platforms:** <carried from the PRD>
-**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md`, `invoice-tracker-trd-ios-v0.1.0.md` — or "Informal brief">
+**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md`, `invoice-tracker-srs-ios-v0.1.0.md`, `invoice-tracker-trd-ios-v0.1.0.md` — or "Informal brief">
 **Downstream:** None — final stage of the chain
 
 ## Revision History
 
 | Version | Date | Author | Upstream version | Summary | IDs added | IDs changed | IDs removed |
 |---|---|---|---|---|---|---|---|
-| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>`, `<trd filename>` | Initial draft | TC-001–TC-048, REQ-01–REQ-03 (every ID in this draft) | — | — |
+| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>`, `<srs filename>`, `<trd filename>` | Initial draft | TC-001–TC-048, REQ-01–REQ-03 (every ID in this draft) | — | — |
 
 One appended row per version, never rewritten. The ID columns cover `TC-xxx` cases and any derived `REQ-xx`; `—` means none, and an empty cell means the change wasn't tracked, which is a gap worth fixing.
 
@@ -321,7 +322,7 @@ When asked to review rather than write, report against the template's section nu
 
 ## Handling upstream updates
 
-When re-running against a revised PRD, design spec, or TRD, the diff has a fixed anchor: your own previous version file records the upstream versions it was built from in `**Upstream:**`. Resolve the newest upstream files and read their **Revision History** first — its IDs added / changed / removed columns give you the diff directly, for every version between the one you cited and the current one. Fall back to comparing the documents in full only where those rows are missing or empty. Then regenerate only the cases linked to changed or new IDs and leave previously reviewed cases untouched. Flag cases linked to a removed requirement for review rather than deleting them automatically — the behavior may have moved elsewhere.
+When re-running against a revised PRD, design spec, SRS, or TRD, the diff has a fixed anchor: your own previous version file records the upstream versions it was built from in `**Upstream:**`. Resolve the newest upstream files and read their **Revision History** first — its IDs added / changed / removed columns give you the diff directly, for every version between the one you cited and the current one. Fall back to comparing the documents in full only where those rows are missing or empty. Then regenerate only the cases linked to changed or new IDs and leave previously reviewed cases untouched. Flag cases linked to a removed requirement for review rather than deleting them automatically — the behavior may have moved elsewhere.
 
 Record the upstream versions this plan now covers, so the next re-run has the same anchor. A plan whose `**Upstream:**` is older than the newest document on disk is stale by definition, and that is what the router's consistency review reports.
 

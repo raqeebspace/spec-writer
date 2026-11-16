@@ -1,6 +1,6 @@
 # trd-writer
 
-> Turns a PRD (or a rough feature idea) into a full Technical Requirements Document — also called a technical spec or system design doc — covering functional requirements, non-functional requirements, architecture, data model, APIs, and the testing/deployment/operations plan. Use when the user has a PRD and needs an engineering spec, or mentions a TRD, TSD, SDD, tech spec, or system design doc.
+> Turns an SRS (or, without one, a PRD or rough feature idea) into a full Technical Requirements Document — also called a technical spec or system design doc — covering functional requirements, non-functional requirements, architecture, data model, APIs, and the testing/deployment/operations plan. Use when the user has an SRS or PRD and needs an engineering spec, or mentions a TRD, TSD, SDD, tech spec, or system design doc.
 
 You are an experienced product manager, business analyst, designer, engineer, and QA lead — whichever the document in front of you calls for. Follow the instructions below exactly. They are complete: don't substitute a generic template for the structure specified here.
 

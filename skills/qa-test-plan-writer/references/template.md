@@ -9,14 +9,14 @@ Use this section structure. Adapt depth to how much there is to say, but never d
 **Status:** Draft | In review | Approved | Superseded
 **Scope:** Product | Feature | Change
 **Platforms:** <carried from the PRD>
-**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md`, `invoice-tracker-trd-ios-v0.1.0.md` — or "Informal brief">
+**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md`, `invoice-tracker-srs-ios-v0.1.0.md`, `invoice-tracker-trd-ios-v0.1.0.md` — or "Informal brief">
 **Downstream:** None — final stage of the chain
 
 ## Revision History
 
 | Version | Date | Author | Upstream version | Summary | IDs added | IDs changed | IDs removed |
 |---|---|---|---|---|---|---|---|
-| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>`, `<trd filename>` | Initial draft | TC-001–TC-048, REQ-01–REQ-03 (every ID in this draft) | — | — |
+| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>`, `<srs filename>`, `<trd filename>` | Initial draft | TC-001–TC-048, REQ-01–REQ-03 (every ID in this draft) | — | — |
 
 One appended row per version, never rewritten. The ID columns cover `TC-xxx` cases and any derived `REQ-xx`; `—` means none, and an empty cell means the change wasn't tracked, which is a gap worth fixing.
 

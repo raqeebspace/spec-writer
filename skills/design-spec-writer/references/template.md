@@ -11,7 +11,7 @@ Use this section structure. Adapt depth to how much there is to say, but never d
 **Platforms:** <carried from the PRD>
 **Design file:** [link, or "none yet"]
 **Upstream:** <exact upstream filename — `invoice-tracker-prd-ios-v0.2.0.md` — or "Informal brief">
-**Downstream:** TRD, QA Test Plan
+**Downstream:** SRS, TRD, QA Test Plan
 
 ## Revision History
 

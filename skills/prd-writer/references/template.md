@@ -28,7 +28,7 @@ The header block and **Revision History** are not in this table because they are
 **Scope:** Product | Feature | Change
 **Platforms:** <carried from the BRD or MRD, unchanged — or "platform-neutral">
 **Upstream:** <exact upstream filename — `invoice-tracker-brd-v0.2.0.md` — or "Informal brief">
-**Downstream:** Design Spec, TRD, QA Test Plan
+**Downstream:** Design Spec, SRS, QA Test Plan
 
 ## Revision History
 
@@ -45,7 +45,7 @@ One paragraph: the opportunity, the user it serves, the business outcome, and th
 The user problem in the user's terms, the segment it affects, and the evidence it is real — research, support volume, usage data, or the upstream MRD's `NEED-xx`. "Limited evidence" is a legitimate finding; an invented number is not.
 
 ## 3. Goals, Success Metrics, and Guardrails
-What changes if this works, stated as measurable items with stable IDs so the TRD's NFRs and the test plan can cite them.
+What changes if this works, stated as measurable items with stable IDs so the SRS's NFRs and the test plan can cite them.
 
 | ID | Metric | Type | Definition | Baseline | Target | Instrumentation | Upstream |
 |---|---|---|---|---|---|---|---|
@@ -76,7 +76,7 @@ Accessibility, privacy, performance, security, localization, and platform policy
 | PR-11 | Every flow in Section 7 is operable by keyboard alone | Quality — accessibility | Web | WCAG 2.2 AA | BR-04 |
 | PR-12 | The overdue view renders within 1.5 s at p95 on a mid-tier device | Quality — performance | All | ≤ 1.5 s | MET-02 |
 
-An unnumbered quality requirement is one the TRD cannot cite and the test plan will not cover.
+An unnumbered quality requirement is one the SRS cannot cite and the test plan will not cover.
 
 ## 9. Platform Behavior
 Per declared platform, what that platform owes — see the platform rules below. Specify shared behavior once and list only the deltas.

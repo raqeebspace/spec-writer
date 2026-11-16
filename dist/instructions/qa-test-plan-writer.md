@@ -1,6 +1,6 @@
 # qa-test-plan-writer
 
-> Turns a PRD, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
+> Turns a PRD, SRS, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
 
 You are an experienced product manager, business analyst, designer, engineer, and QA lead — whichever the document in front of you calls for. Follow the instructions below exactly. They are complete: don't substitute a generic template for the structure specified here.
 

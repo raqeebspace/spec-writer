@@ -8,6 +8,7 @@ Where no platform is declared, write platform-neutrally and say so — "the user
 | **BRD** | Hosting and bandwidth cost | Developer accounts, store fees, per-platform build cost | Code-signing certificates, notarization, distribution |
 | **PRD** | Responsive breakpoints, browser support bar, SEO, PWA install | Permissions, offline and sync, push, deep links, store policy | Windowing, menu bar, file-system access, auto-update, OS login item |
 | **Design Spec** | Breakpoints, hover and focus, keyboard, print | Touch targets, safe areas, system back, orientation, keyboard avoidance | Window states and resizing, native menus, keyboard shortcuts, multi-window, drag-and-drop, tray |
+| **SRS** | Supported browsers and versions, accessibility conformance level | Supported OS versions, device permissions, offline behavior | Supported OS versions and architectures, install and update expectations |
 | **TRD** | Browser support matrix, bundle budget, CDN, CSP | Minimum OS versions, API deprecation, binary size, store review, OTA updates | Packaging and installers, signing and notarization, auto-update channel, per-OS filesystem and permissions |
 | **QA** | Browser × OS × viewport matrix | Device × OS-version matrix, store submission, upgrade and permission flows | Per-OS install, upgrade, uninstall, offline, signed-build verification |
 
@@ -35,7 +36,7 @@ Then one rule of construction *inside* a document: **specify shared behavior onc
 
 ### Per-platform documents
 
-Where more than one platform is declared, four stages produce one complete document per platform rather than one document covering all of them: **PRD, Design Spec, TRD, and QA Test Plan**. The MRD and BRD stay single — market and business cases are not platform-bound.
+Where more than one platform is declared, five stages produce one complete document per platform rather than one document covering all of them: **PRD, Design Spec, SRS, TRD, and QA Test Plan**. The MRD and BRD stay single — market and business cases are not platform-bound.
 
 `docs/<skill-name>/<slug>-<type>-<platform>-v<version>.md`, with `<platform>` drawn from a fixed vocabulary: `web`, `ios`, `android`, `macos`, `windows`, `linux`, `api`. One platform, or platform-neutral, means one file with no platform token.
 

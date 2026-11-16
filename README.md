@@ -21,7 +21,7 @@
 
 Ask an AI assistant for a spec and you get one document that forgets everything the last one said. Requirements drift between documents, nobody can trace a test case back to the reason it exists, and every rewrite starts from the conversation instead of the file.
 
-spec-writer runs the whole chain instead. Six documents — MRD, BRD, PRD, design spec, TRD, QA test plan — each generated from the one above it, each carrying stable requirement IDs, so an idea can be followed from market opportunity through to test coverage.
+spec-writer runs the whole chain instead. Seven documents — MRD, BRD, PRD, design spec, SRS, TRD, QA test plan — each generated from the one above it, each carrying stable requirement IDs, so an idea can be followed from market opportunity through to test coverage.
 
 Every stage reads its upstream document from disk, not from chat: it resolves the newest matching version, cites that exact filename, writes the next version alongside the old one, and appends a changelog entry. That is what makes staleness, orphans, and coverage gaps mechanical to check rather than a matter of memory.
 
@@ -33,8 +33,9 @@ Every stage reads its upstream document from disk, not from chat: it resolves th
 | 2 | BRD — Business Requirements | `brd-writer` | What business outcome does this support, and what will it take? |
 | 3 | PRD — Product Requirements | `prd-writer` | What should the product actually do? |
 | 4 | Design Spec | `design-spec-writer` | What does the user see and do, screen by screen? |
-| 5 | TRD — Technical Requirements | `trd-writer` | How will engineering build it? |
-| 6 | QA Test Plan | `qa-test-plan-writer` | How do we prove it works? |
+| 5 | SRS — Software Requirements Specification | `srs-writer` | What shall the software do, testably, and under what constraints? |
+| 6 | TRD — Technical Requirements | `trd-writer` | How will engineering build it? |
+| 7 | QA Test Plan | `qa-test-plan-writer` | How do we prove it works? |
 
 `spec-writer` is the router skill: it picks the right stage, holds the shared conventions, and can review an existing set of documents for coverage, orphans, layer violations, staleness, and contradictions.
 
@@ -58,7 +59,7 @@ npx @rqbctg/spec-writer print all > spec-writer.md
 ```
 
 ```
-npx @rqbctg/spec-writer list             # the six documents
+npx @rqbctg/spec-writer list             # the seven documents
 npx @rqbctg/spec-writer --help
 ```
 
@@ -126,15 +127,18 @@ docs/prd-writer/invoice-tracker-prd-ios-v0.0.1.md
 docs/prd-writer/invoice-tracker-prd-android-v0.0.1.md
 ```
 
-`PR-01` means the same requirement in all three; a mobile-only requirement like `PR-06` (scan a paper invoice with the camera) exists only in the two mobile files. Success metrics get IDs too — `MET-01` — so the TRD's NFRs and the test plan can cite them.
+`PR-01` means the same requirement in all three; a mobile-only requirement like `PR-06` (scan a paper invoice with the camera) exists only in the two mobile files. Success metrics get IDs too — `MET-01` — so the SRS's NFRs and the test plan can cite them.
 
-**4. Design spec, TRD, test plan.** These can run in parallel once the PRD is at solution-review or launch-readiness stage:
+**4. Design spec, SRS, TRD, test plan.** Once the PRD is at solution-review or launch-readiness stage, the design spec and SRS can run in parallel; the TRD follows the SRS, and the test plan comes last:
 
 ```
 /design-spec-writer     # screens, states, components, accessibility
-/trd-writer             # architecture, data model, APIs, NFRs
+/srs-writer             # EARS requirements, interfaces, NFRs, FMEA, traceability
+/trd-writer             # architecture, data model, APIs — under the SRS's IDs
 /qa-test-plan-writer    # cases, coverage, regression scope
 ```
+
+The SRS is where `FR-xx` and `NFR-xx` are minted; the TRD refines each under the same ID.
 
 Each resolves its own upstream from disk — newest version, matching platform — and records exactly which file it read:
 
@@ -216,6 +220,7 @@ docs/
                        invoice-tracker-prd-android-v0.1.0.md
                        invoice-tracker-prd-web-v0.1.0.md
   design-spec-writer/  invoice-tracker-design-spec-ios-v0.0.2.md
+  srs-writer/          invoice-tracker-srs-ios-v0.0.1.md
   trd-writer/          invoice-tracker-trd-ios-v0.0.1.md
   qa-test-plan-writer/ invoice-tracker-test-plan-ios-v0.0.1.md
 ```
@@ -246,7 +251,7 @@ Entries are appended, never rewritten; a correction is a new version with a new 
 
 ### One document per platform
 
-Where more than one platform is declared, four stages produce a complete document per platform — **PRD, design spec, TRD, and QA test plan**. The MRD and BRD stay single; market and business cases are not platform-bound.
+Where more than one platform is declared, five stages produce a complete document per platform — **PRD, design spec, SRS, TRD, and QA test plan**. The MRD and BRD stay single; market and business cases are not platform-bound.
 
 `<slug>-<type>-<platform>-v<version>.md`, with `<platform>` one of `web`, `ios`, `android`, `macos`, `windows`, `linux`, `api`. A single platform, or none, means one file with no platform token.
 
@@ -261,7 +266,7 @@ Each file is standalone — shared behavior written out in full, not cross-refer
 
 ## Scope
 
-Works at three scopes — a whole product, a single feature of an existing one, or a small change. Pick the scope and the chain shortens accordingly, rather than putting a two-week feature through six product-scale documents.
+Works at three scopes — a whole product, a single feature of an existing one, or a small change. Pick the scope and the chain shortens accordingly, rather than putting a two-week feature through seven product-scale documents.
 
 | | **Product** | **Feature** | **Change** |
 |---|---|---|---|
@@ -269,6 +274,7 @@ Works at three scopes — a whole product, a single feature of an existing one, 
 | BRD | Full | Only if it needs its own funding or sign-off | Skip |
 | PRD | Full | **Start here** — scoped to the feature | One page |
 | Design Spec | Full | New and changed screens only | Only if the UI changes |
+| SRS | Full | The feature's requirements, plus FMEA | Skip |
 | TRD | Full | The delta, plus blast radius | Only if non-obvious |
 | QA Test Plan | Full | New cases plus regression scope | Cases plus regression scope |
 
@@ -289,9 +295,10 @@ PRD   PR-01      → BR-xx/NEED-xx    product requirement
 DS    FLOW-01    → PR-xx            user flow
       SCR-01     → PR-xx            screen
       CMP-01     → SCR-xx           component
-TRD   FR-01      → PR-xx/SCR-xx     functional requirement
+SRS   FR-01      → PR-xx/SCR-xx     functional requirement (the TRD keeps the same ID)
       NFR-01     → MET-xx/PR-xx     non-functional requirement, or a BRD constraint
-      API-01     → FR-xx            endpoint
+      FM-01      → document-local   FMEA failure mode
+TRD   API-01     → FR-xx            endpoint
 QA    REQ-01     → no upstream      derived requirement — flags a gap in the source
       TC-001     → any ID above     test case
 ```
@@ -314,6 +321,7 @@ An item with no upstream parent is marked `[no upstream — new in this document
 | BRD | BABOK v3; ISO/IEC/IEEE 29148:2018 (BRS) |
 | PRD | INVEST stories, Given/When/Then, MoSCoW |
 | Design Spec | WCAG 2.2 AA; W3C ARIA Authoring Practices |
+| SRS | ISO/IEC/IEEE 29148:2018 §9.6; EARS; ISO/IEC 25010:2023; IEC 60812:2018 (FMEA) |
 | TRD | ISO/IEC/IEEE 29148:2018; ISO/IEC 25010:2023 |
 | QA Test Plan | ISO/IEC/IEEE 29119-3:2021 |
 
@@ -345,8 +353,9 @@ skills/mrd-writer/                stage 1
 skills/brd-writer/                stage 2
 skills/prd-writer/                stage 3
 skills/design-spec-writer/        stage 4
-skills/trd-writer/                stage 5
-skills/qa-test-plan-writer/       stage 6
+skills/srs-writer/                stage 5
+skills/trd-writer/                stage 6
+skills/qa-test-plan-writer/       stage 7
 ```
 
 Each skill folder holds a short `SKILL.md` — routing, workflow, and quality bar — plus a

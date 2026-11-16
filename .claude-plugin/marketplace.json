@@ -12,7 +12,7 @@
     {
       "name": "spec-writer",
       "source": "./",
-      "description": "Router and six document skills: MRD, BRD, PRD, Design Spec, TRD, QA Test Plan.",
+      "description": "Router and seven document skills: MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan.",
       "version": "1.0.0",
       "category": "documentation"
     }

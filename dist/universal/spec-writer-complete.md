@@ -1,6 +1,6 @@
 # spec-writer — complete instruction set
 
-Six connected product documents: MRD, BRD, PRD, Design Spec, TRD, QA Test Plan. Start with the router, then follow the module for the stage you're on.
+Seven connected product documents: MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan. Start with the router, then follow the module for the stage you're on.
 
 
 
@@ -8,11 +8,11 @@ Six connected product documents: MRD, BRD, PRD, Design Spec, TRD, QA Test Plan. 
 
 # MODULE: spec-writer
 
-> Router and shared conventions for the product documentation chain — MRD, BRD, PRD, Design Spec, TRD, QA Test Plan. Use when the user wants product/project documentation but hasn't named a specific document type, asks which document they need, wants several documents produced in sequence, or asks to check that an existing set of docs is consistent and traceable.
+> Router and shared conventions for the product documentation chain — MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan. Use when the user wants product/project documentation but hasn't named a specific document type, asks which document they need, wants several documents produced in sequence, or asks to check that an existing set of docs is consistent and traceable.
 
 # Spec Writer
 
-The entry point for a six-document chain. Each document answers one question, at one altitude, for one audience — and each is generated from the one above it so a product can be traced from market opportunity all the way to test coverage.
+The entry point for a seven-document chain. Each document answers one question, at one altitude, for one audience — and each is generated from the one above it so a product can be traced from market opportunity all the way to test coverage.
 
 | # | Document | Module | Answers | Primary audience |
 |---|---|---|---|---|
@@ -20,8 +20,9 @@ The entry point for a six-document chain. Each document answers one question, at
 | 2 | BRD — Business Requirements | `brd-writer` | What business outcome does this support, and what will it take? | Sponsors, approvers, finance |
 | 3 | PRD — Product Requirements | `prd-writer` | What should the product actually do? | Product, design, engineering |
 | 4 | Design Spec | `design-spec-writer` | What does the user see and do, screen by screen? | Design, frontend, QA |
-| 5 | TRD — Technical Requirements | `trd-writer` | How will engineering build it? | Engineering, architecture |
-| 6 | QA Test Plan | `qa-test-plan-writer` | How do we prove it works? | QA, automation |
+| 5 | SRS — Software Requirements Specification | `srs-writer` | What shall the software do, testably, and under what constraints? | Engineering, QA, approvers, clients |
+| 6 | TRD — Technical Requirements | `trd-writer` | How will engineering build it? | Engineering, architecture |
+| 7 | QA Test Plan | `qa-test-plan-writer` | How do we prove it works? | QA, automation |
 
 ## Routing
 
@@ -33,9 +34,10 @@ First settle the scope (see below), because it decides how many stages even appl
 - An MRD, or a project that's already been decided on but needs sponsor/budget sign-off → **`brd-writer`**.
 - A validated problem and a decision to build → **`prd-writer`**.
 - A PRD with user-facing surface area (any UI at all) → **`design-spec-writer`**.
-- A PRD, with or without a design spec → **`trd-writer`**.
-- A PRD, design spec, or TRD, and a need for coverage → **`qa-test-plan-writer`**.
-- "Give me the full set" / "document this idea end to end" → run the chain in order, stopping after each document to confirm before spending effort on the next. Do not silently generate six documents from one sentence; each one inherits the previous one's assumptions, and a wrong turn at the MRD stage poisons all five below it.
+- A PRD, with or without a design spec, and a need for testable software requirements → **`srs-writer`**.
+- An SRS → **`trd-writer`**. With only a PRD, run `srs-writer` first; the TRD carries the SRS's requirement IDs.
+- A PRD, design spec, SRS, or TRD, and a need for coverage → **`qa-test-plan-writer`**.
+- "Give me the full set" / "document this idea end to end" → run the chain in order, stopping after each document to confirm before spending effort on the next. Do not silently generate seven documents from one sentence; each one inherits the previous one's assumptions, and a wrong turn at the MRD stage poisons all six below it.
 - A feature being added to something that already exists → **`prd-writer`**, at feature scope, inheriting the product's existing documents. Don't start at the MRD unless the feature opens a new market segment.
 - "Review / check my docs" → read what exists, then report against **Traceability** and **Layer discipline** below.
 
@@ -52,6 +54,7 @@ The chain works at three scopes. Pick one before routing — running product-sca
 | BRD | Full | Only if it needs its own funding, headcount, or sponsor sign-off | Skip |
 | PRD | Full | **Start here.** Scoped to the feature, inheriting product context | One page: problem, requirements, acceptance criteria |
 | Design Spec | Full | New and changed screens only, plus the states they add to existing ones | Only if the UI changes |
+| SRS | Full | The feature's requirements only, under namespaced IDs, plus FMEA for what it adds | Skip — the PRD's acceptance criteria are enough |
 | TRD | Full | The delta: what's added, what's modified, what the blast radius is | Only if the design is non-obvious |
 | QA Test Plan | Full | New cases, plus regression scope for what the change can reach | Cases for the change, plus its regression scope |
 
@@ -69,7 +72,7 @@ If the user hands you a feature but wants the full chain anyway, produce it — 
 
 ## Shared conventions
 
-Every stage in this chain follows these. They are what make six documents one system instead of six unrelated files.
+Every stage in this chain follows these. They are what make seven documents one system instead of seven unrelated files.
 
 ### Layer discipline
 
@@ -81,7 +84,8 @@ Each document stays at its own altitude. The most common failure in requirement 
 | BRD | Outcomes, scope, cost, sign-off | System behavior → PRD/TRD |
 | PRD | Product behavior, requirements, metrics | Architecture, stack → TRD |
 | Design Spec | Screens, flows, states, content | Data models, endpoints → TRD |
-| TRD | Architecture, APIs, data, NFRs | Business justification → BRD |
+| SRS | Testable requirements, interfaces, constraints, FMEA | Architecture, schema, endpoints → TRD |
+| TRD | Architecture, APIs, data, technical refinement of requirements | Business justification → BRD |
 | QA Test Plan | Cases, coverage, risk | New business rules → question log |
 
 When you catch a sentence in the wrong layer, move it or cut it — and if it's genuinely new information, note it for the document where it belongs.
@@ -101,12 +105,16 @@ PRD   PR-01     product requirement           → traces to BR-xx (or NEED-xx)
 DS    FLOW-01   user flow                     → traces to PR-xx
       SCR-01    screen / surface              → traces to PR-xx
       CMP-01    component                     → traces to SCR-xx
-TRD   FR-01     functional requirement        → traces to PR-xx (and SCR-xx where a design spec exists)
+SRS   FR-01     functional requirement        → traces to PR-xx (and SCR-xx where a design spec exists)
       NFR-01    non-functional requirement    → traces to MET-xx, a PR-xx, or a BRD constraint
+      FM-01     FMEA failure mode             → document-local; its mitigation cites an FR-xx or NFR-xx
+TRD   FR-01     (carried from the SRS, same ID; new technical FR-xx trace to an SRS FR-xx)
       API-01    endpoint / interface          → traces to FR-xx
 QA    REQ-01    derived requirement           → no upstream; flags a gap in the source document
       TC-001    test case                     → traces to any ID above
 ```
+
+The SRS mints `FR-xx` and `NFR-xx`; the TRD refines them under the same IDs, so one ID still means one thing across the set.
 
 Never invent a parent ID. If an item has no upstream parent, mark it `[no upstream — new in this document]` and add it to Assumptions and Open Questions. Orphans are usually either a genuine gap in the parent doc or scope creep, and both are worth surfacing.
 
@@ -134,7 +142,7 @@ A document is built from a file, not from the conversation, so resolving that fi
 1. **The producing skill's folder is the source** — `docs/prd-writer/` for a PRD, `docs/trd-writer/` for a TRD, or the project's own documentation directory where one replaces `docs/`.
 2. **Highest version wins.** Compare `v<major>.<minor>.<patch>` numerically (`v0.0.10` is newer than `v0.0.9`). Read an older version only when the user asks for it by name, and say so in the header block.
 3. **Platform matches platform.** A per-platform document is built from its own platform's upstream file; where the upstream is a single file with no platform token, every platform reads that one.
-4. **The exact filename goes in `**Upstream:**`** — version and platform included. A stage reading several documents lists them all, comma-separated, one filename each: the TRD cites its PRD and design spec, the test plan cites all three. A missing one reads as "this document was written without it". Combined with rule 2, that is what makes the staleness check below mechanical rather than a judgement call: compare the cited filename against the newest file in the upstream folder.
+4. **The exact filename goes in `**Upstream:**`** — version and platform included. A stage reading several documents lists them all, comma-separated, one filename each: the SRS cites its PRD and design spec, the TRD cites its SRS, PRD, and design spec, the test plan cites all four. A missing one reads as "this document was written without it". Combined with rule 2, that is what makes the staleness check below mechanical rather than a judgement call: compare the cited filename against the newest file in the upstream folder.
 
 On a re-run, the document's own previous version records which upstream version it was built from. Diff the newest upstream against that one and change only what the difference requires, rather than redrafting from scratch.
 
@@ -234,10 +242,11 @@ Each stage is structured on the recognised standard for its document type, so th
 | BRD | BABOK v3 (IIBA); ISO/IEC/IEEE 29148:2018 BRS | Requirement classification, RACI, risk register, sign-off |
 | PRD | INVEST stories, Given/When/Then, MoSCoW | Product-layer requirements and acceptance criteria |
 | Design Spec | WCAG 2.2 AA, W3C ARIA Authoring Practices | States, components, accessibility, localization |
+| SRS | ISO/IEC/IEEE 29148:2018 §9.6 (superseded IEEE 830); EARS; ISO/IEC 25010:2023; IEC 60812:2018 FMEA | SRS content, requirement syntax, NFR classification, risk analysis |
 | TRD | ISO/IEC/IEEE 29148:2018; ISO/IEC 25010:2023 | Requirement form and quality; NFR classification |
 | QA Test Plan | ISO/IEC/IEEE 29119-3:2021 (superseded IEEE 829) | Plan structure, entry/exit, suspension/resumption |
 
-Two conventions run across all six. Requirements use the **29148** sentence form — *[condition] [subject] [action] [object] [constraint]* — with *shall* binding, *should* recommended, *may* optional. And every requirement is judged against the nine **29148** quality characteristics: necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, conforming.
+Two conventions run across all seven. Requirements use the **29148** sentence form — *[condition] [subject] [action] [object] [constraint]* — with *shall* binding, *should* recommended, *may* optional. And every requirement is judged against the nine **29148** quality characteristics: necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, conforming.
 
 ## Platforms
 
@@ -251,6 +260,7 @@ Where no platform is declared, write platform-neutrally and say so — "the user
 | **BRD** | Hosting and bandwidth cost | Developer accounts, store fees, per-platform build cost | Code-signing certificates, notarization, distribution |
 | **PRD** | Responsive breakpoints, browser support bar, SEO, PWA install | Permissions, offline and sync, push, deep links, store policy | Windowing, menu bar, file-system access, auto-update, OS login item |
 | **Design Spec** | Breakpoints, hover and focus, keyboard, print | Touch targets, safe areas, system back, orientation, keyboard avoidance | Window states and resizing, native menus, keyboard shortcuts, multi-window, drag-and-drop, tray |
+| **SRS** | Supported browsers and versions, accessibility conformance level | Supported OS versions, device permissions, offline behavior | Supported OS versions and architectures, install and update expectations |
 | **TRD** | Browser support matrix, bundle budget, CDN, CSP | Minimum OS versions, API deprecation, binary size, store review, OTA updates | Packaging and installers, signing and notarization, auto-update channel, per-OS filesystem and permissions |
 | **QA** | Browser × OS × viewport matrix | Device × OS-version matrix, store submission, upgrade and permission flows | Per-OS install, upgrade, uninstall, offline, signed-build verification |
 
@@ -278,7 +288,7 @@ Then one rule of construction *inside* a document: **specify shared behavior onc
 
 ### Per-platform documents
 
-Where more than one platform is declared, four stages produce one complete document per platform rather than one document covering all of them: **PRD, Design Spec, TRD, and QA Test Plan**. The MRD and BRD stay single — market and business cases are not platform-bound.
+Where more than one platform is declared, five stages produce one complete document per platform rather than one document covering all of them: **PRD, Design Spec, SRS, TRD, and QA Test Plan**. The MRD and BRD stay single — market and business cases are not platform-bound.
 
 `docs/<skill-name>/<slug>-<type>-<platform>-v<version>.md`, with `<platform>` drawn from a fixed vocabulary: `web`, `ios`, `android`, `macos`, `windows`, `linux`, `api`. One platform, or platform-neutral, means one file with no platform token.
 
@@ -303,10 +313,11 @@ Deliver by the highest tier the environment supports: **(1)** write to the files
 | 2 | `brd-writer` | `docs/brd-writer/<slug>-brd-v<version>.md` |
 | 3 | `prd-writer` | `docs/prd-writer/<slug>-prd-v<version>.md`, or one per platform |
 | 4 | `design-spec-writer` | `docs/design-spec-writer/<slug>-design-spec-v<version>.md`, or one per platform |
-| 5 | `trd-writer` | `docs/trd-writer/<slug>-trd-v<version>.md`, or one per platform |
-| 6 | `qa-test-plan-writer` | `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`, or one per platform |
+| 5 | `srs-writer` | `docs/srs-writer/<slug>-srs-v<version>.md`, or one per platform |
+| 6 | `trd-writer` | `docs/trd-writer/<slug>-trd-v<version>.md`, or one per platform |
+| 7 | `qa-test-plan-writer` | `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`, or one per platform |
 
-Each skill owns one subfolder of `docs/`, named after the skill, so a product's six documents are grouped by the stage that produced them. Use one consistent `<slug>` across all six files for a given product — that's what makes the set readable as a set.
+Each skill owns one subfolder of `docs/`, named after the skill, so a product's seven documents are grouped by the stage that produced them. Use one consistent `<slug>` across all seven files for a given product — that's what makes the set readable as a set.
 
 Where a filesystem exists, create `docs/` only when it is missing; if it already exists, write into it untouched. Create the skill's subfolder inside it the same way. Where the project already has a documentation directory (`documentation/`, `doc/`, a docs site's content folder), use that instead of creating `docs/`, with the same per-skill subfolder inside it.
 
@@ -442,7 +453,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-mrd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-mrd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/mrd-writer/<slug>-mrd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/mrd-writer/<slug>-mrd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -720,7 +731,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-brd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-brd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/brd-writer/<slug>-brd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/brd-writer/<slug>-brd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -902,7 +913,7 @@ If the user asks for functional requirements or a feature spec next, that's a PR
 
 # PRD Writer
 
-Stage 3 of the spec-writer chain. Reads a BRD, an MRD, or a brief; feeds `design-spec-writer`, `trd-writer`, and `qa-test-plan-writer`.
+Stage 3 of the spec-writer chain. Reads a BRD, an MRD, or a brief; feeds `design-spec-writer`, `srs-writer`, and `qa-test-plan-writer`.
 
 Build the PRD to match the team's current confidence and the decision it needs to enable. Don't pretend an early hunch has launch-ready certainty, and don't force every request through every stage.
 
@@ -1051,7 +1062,7 @@ The header block and **Revision History** are not in this table because they are
 **Scope:** Product | Feature | Change
 **Platforms:** <carried from the BRD or MRD, unchanged — or "platform-neutral">
 **Upstream:** <exact upstream filename — `invoice-tracker-brd-v0.2.0.md` — or "Informal brief">
-**Downstream:** Design Spec, TRD, QA Test Plan
+**Downstream:** Design Spec, SRS, QA Test Plan
 
 ## Revision History
 
@@ -1068,7 +1079,7 @@ One paragraph: the opportunity, the user it serves, the business outcome, and th
 The user problem in the user's terms, the segment it affects, and the evidence it is real — research, support volume, usage data, or the upstream MRD's `NEED-xx`. "Limited evidence" is a legitimate finding; an invented number is not.
 
 ## 3. Goals, Success Metrics, and Guardrails
-What changes if this works, stated as measurable items with stable IDs so the TRD's NFRs and the test plan can cite them.
+What changes if this works, stated as measurable items with stable IDs so the SRS's NFRs and the test plan can cite them.
 
 | ID | Metric | Type | Definition | Baseline | Target | Instrumentation | Upstream |
 |---|---|---|---|---|---|---|---|
@@ -1099,7 +1110,7 @@ Accessibility, privacy, performance, security, localization, and platform policy
 | PR-11 | Every flow in Section 7 is operable by keyboard alone | Quality — accessibility | Web | WCAG 2.2 AA | BR-04 |
 | PR-12 | The overdue view renders within 1.5 s at p95 on a mid-tier device | Quality — performance | All | ≤ 1.5 s | MET-02 |
 
-An unnumbered quality requirement is one the TRD cannot cite and the test plan will not cover.
+An unnumbered quality requirement is one the SRS cannot cite and the test plan will not cover.
 
 ## 9. Platform Behavior
 Per declared platform, what that platform owes — see the platform rules below. Specify shared behavior once and list only the deltas.
@@ -1196,7 +1207,7 @@ Stories follow the standard *As a / I want / so that* form held to **INVEST**, w
 - Every `PR-xx` is one behavior — no requirement containing "and" that could fail in two ways.
 - Every `PR-xx` has an acceptance criterion a tester could observe; "works as expected" is not one.
 - Every `PR-xx` and `MET-xx` cites a real parent, or carries `[no upstream — new in this document]` and a Section 15 entry. Never a dash.
-- Every quality requirement in Section 8 has a `PR-xx` ID, so the TRD can cite it.
+- Every quality requirement in Section 8 has a `PR-xx` ID, so the SRS can cite it.
 - Every metric names its type, a number, a baseline, and its instrumentation.
 - Every requirement names its platforms, and the parity intent from MRD Section 5 is carried into Section 5 here.
 - Non-Goals is specific and real — a placeholder there makes the section worthless.
@@ -1214,7 +1225,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-prd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-prd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/prd-writer/<slug>-prd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/prd-writer/<slug>-prd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -1267,7 +1278,7 @@ The MRD argues the market is real and the BRD argues the business should fund it
 
 ## Handing off
 
-Once the PRD reaches stage 4–5, it can feed three documents in parallel: `design-spec-writer` for user-facing surface area, `trd-writer` for the engineering blueprint, and `qa-test-plan-writer` for coverage. Each cites `PR-xx` IDs, so keep those stable — renumber only when a requirement is genuinely removed, and note the removal rather than silently reusing the ID.
+Once the PRD reaches stage 4–5, it can feed three documents in parallel: `design-spec-writer` for user-facing surface area, `srs-writer` for the software requirements (which then feed `trd-writer`), and `qa-test-plan-writer` for coverage. Each cites `PR-xx` IDs, so keep those stable — renumber only when a requirement is genuinely removed, and note the removal rather than silently reusing the ID.
 
 
 ---
@@ -1278,7 +1289,7 @@ Once the PRD reaches stage 4–5, it can feed three documents in parallel: `desi
 
 # Design Spec Writer
 
-Stage 4 of the spec-writer chain. Reads a PRD; feeds `trd-writer` and `qa-test-plan-writer`.
+Stage 4 of the spec-writer chain. Reads a PRD; feeds `srs-writer`, `trd-writer`, and `qa-test-plan-writer`.
 
 ## What this does
 
@@ -1390,7 +1401,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-design-spec-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-design-spec-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/design-spec-writer/<slug>-design-spec-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/design-spec-writer/<slug>-design-spec-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -1455,7 +1466,7 @@ Use this section structure. Adapt depth to how much there is to say, but never d
 **Platforms:** <carried from the PRD>
 **Design file:** [link, or "none yet"]
 **Upstream:** <exact upstream filename — `invoice-tracker-prd-ios-v0.2.0.md` — or "Informal brief">
-**Downstream:** TRD, QA Test Plan
+**Downstream:** SRS, TRD, QA Test Plan
 
 ## Revision History
 
@@ -1580,15 +1591,17 @@ Accessibility targets **WCAG 2.2 Level AA**, with specific success criteria cite
 
 ---
 
-# MODULE: trd-writer
+# MODULE: srs-writer
 
-> Turns a PRD (or a rough feature idea) into a full Technical Requirements Document — also called a technical spec or system design doc — covering functional requirements, non-functional requirements, architecture, data model, APIs, and the testing/deployment/operations plan. Use when the user has a PRD and needs an engineering spec, or mentions a TRD, TSD, SDD, tech spec, or system design doc.
+> Turns a PRD (and its design spec, where one exists) into a full Software Requirements Specification: introduction, overall description, EARS-form functional and non-functional requirements with Given/When/Then examples, external interfaces, business rules, database, legal, i18n, FMEA risk analysis, traceability matrix, TBD list, and approval block. Use when the user has a PRD and needs the software requirements before engineering design, or asks for an SRS, a software requirements specification, an IEEE-style requirements document, or a sign-off-ready spec for a client, auditor, regulator, or vendor.
 
-# TRD Writer
+# SRS Writer
 
-Stage 5 of the spec-writer chain. Reads a PRD and, where one exists, a Design Spec; feeds `qa-test-plan-writer`.
+Stage 5 of the spec-writer chain. Reads a PRD and, where one exists, a Design Spec; feeds `trd-writer` and `qa-test-plan-writer`.
 
-Turn product requirements into a rigorous engineering blueprint: the document that translates the PRD's "what" into a constructible "how," so every engineer, QA lead, and reviewer works from one source of truth.
+Turn product requirements into a Software Requirements Specification: what the software shall do, under what constraints, and how each requirement will be verified. The PRD says what the product does for its users. The SRS states that as testable software requirements — the contract a client, auditor, tester, or vendor can sign. The TRD, downstream, then decides how engineering builds it.
+
+This is where the chain's functional and non-functional requirements are minted. Every `FR-xx` and `NFR-xx` starts here, and the TRD and test plan carry them under the same IDs.
 
 ## Reading the upstream documents
 
@@ -1611,7 +1624,326 @@ Outside a repository — a pasted document, an attachment, or a document drafted
 
 Resolve the PRD by the rules above — highest version in `docs/prd-writer/`, matching platform, exact filename cited. A pasted description or a PRD drafted earlier in this conversation counts. If there is no PRD at all, work from whatever the user describes and state explicitly in the header that it's derived from an informal brief.
 
-Read the whole PRD before drafting. Pull out the problem statement, target users, user stories and requirements (`PR-xx`), success metrics, stated constraints (deadline, budget, platforms), and everything the PRD explicitly excludes.
+Read the whole PRD before drafting. Pull out the problem statement, user classes, `PR-xx` stories and requirements with their acceptance criteria, the Section 8 quality requirements, `MET-xx` metrics and guardrails, priorities, constraints, and everything the PRD explicitly excludes. If the BRD carries constraints the PRD doesn't repeat — regulatory, contractual — read those too.
+
+If a Design Spec exists, read it too — its screens, flows, states, and validation rules are functional requirements you'd otherwise have to re-derive, and its `SCR-xx` and `FLOW-xx` IDs are cited alongside the `PR-xx` ones.
+
+**Scope and platforms:** carry both from the PRD header into this document's header verbatim, and do not ask again.
+
+## Step 2 — Fill the gaps the PRD won't have
+
+A PRD rarely holds everything an SRS needs. Identify what is missing and ask the user in one batched question:
+
+- Who approves this document, and for what purpose — internal engineering handoff, contract, regulatory submission, vendor handoff, or formal acceptance
+- Quality targets the PRD leaves open: response time, availability, data retention, recovery time, accessibility conformance level
+- Security and privacy: user roles and permissions, data sensitivity, audit needs
+- Applicable regulations and standards, with the clauses that matter
+- Supported locales, languages, and currencies
+- External systems, hardware, and communications the software must interface with
+- The FMEA risk threshold: the RPN at or above which a mitigation is mandatory
+
+If the user is unavailable, state reasonable assumptions in Section 2.5 and Section 6 rather than baking in silent defaults.
+
+## Step 3 — Write the requirements in EARS
+
+Derive the software requirements from the PRD and number them: `FR-xx` for functional, `NFR-xx` for non-functional. These IDs are global — the TRD refines them and the test plan tests them under the same numbers, so never renumber an existing one on a re-run.
+
+1. **One EARS pattern per requirement** — ubiquitous, event-driven, state-driven, unwanted behavior, optional feature, or complex — with *shall*. Describe observable behavior only: no table names, frameworks, endpoints, or status codes. Those belong to the TRD.
+2. **Keep it singular.** A requirement with "and" that can fail two ways is two requirements.
+3. **Add specification by example.** Each rule, calculation, or edge case gets at least one Given/When/Then scenario with concrete values.
+4. **Assign priority** — Must, Should, Could, or Won't — carried from the PRD's MoSCoW where it exists.
+5. **Trace every one.** Each `FR-xx` cites the `PR-xx` it implements, plus `SCR-xx` where a design spec exists. Each `NFR-xx` cites a `MET-xx`, a Section 8 `PR-xx`, or a BRD constraint. Never invent a parent.
+6. **Give every NFR a number and a verification method**, classified against the ISO/IEC 25010:2023 quality model. Walk all nine characteristics, and mark the ones that don't apply rather than skipping them.
+
+## Step 4 — Assess risk with FMEA
+
+For each feature, ask what can fail, what the user experiences, and why. Score each failure mode for severity (S), occurrence (O), and detection difficulty (D), each 1–10, and compute RPN = S × O × D. Sort by RPN. Every failure mode above the threshold from Step 2, and every one with S ≥ 9, names a mitigation that is a requirement ID in this document. Number failure modes `FM-xx`. They are document-local, and nothing downstream traces to them.
+
+Scores are judgment, not measurement. State who scored them, and mark scores made without the team as assumptions.
+
+## Step 5 — Link stories to requirements
+
+Build the traceability matrix: every PRD `PR-xx` maps to the SRS requirements that satisfy it and the design surfaces that show it. A `PR-xx` with no requirement is a coverage gap. A requirement with no `PR-xx` carries `[no upstream — new in this document]`. Both go in Section 6.
+
+## Step 6 — Structure the document
+
+Produce the SRS with the sections below, in order. No section is ever deleted: one that genuinely doesn't apply is marked `Not applicable — <reason>`, and one that applies but has nothing behind it yet is marked `Insufficient evidence — <what would resolve it>`. Which of the two you pick is itself information a reviewer needs.
+
+The outline follows the common SRS shape — Introduction, Overall Description, System Features and Requirements, Other Requirements, Appendices — with one correction: performance and security are stated once, under Non-Functional Requirements, rather than repeated under External Interface Requirements, so no requirement has two homes that can drift apart.
+
+```markdown
+# Software Requirements Specification: [product / feature name]
+
+**Owner:** <name or role>
+**Date:** <today's date>
+**Version:** 0.0.1
+**Status:** Draft | In review | Approved | Superseded
+**Scope:** Product | Feature | Change
+**Platforms:** <carried from the PRD>
+**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.3.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md` — or "Informal brief">
+**Downstream:** TRD, QA Test Plan
+
+## Revision History
+
+| Version | Date | Author | Upstream version | Summary | IDs added | IDs changed | IDs removed |
+|---|---|---|---|---|---|---|---|
+| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>` | Initial draft | FR-01–FR-12, NFR-01–NFR-06, FM-01–FM-05 (every ID in this draft) | — | — |
+
+One appended row per version, never rewritten. `—` means none; an empty cell means the change wasn't tracked, which is a gap worth fixing.
+
+## 1. Introduction
+
+### 1.1 Purpose
+What software this SRS specifies, which release or version of it, and what decision this document exists to support — engineering handoff, contract, regulatory submission, vendor handoff, or acceptance sign-off.
+
+### 1.2 Intended Audience
+Each reader and what they take from it: product owner and business analyst (requirements are complete), developers (what to build), testers (what to verify), project manager (scope), client and approvers (what they are signing).
+
+### 1.3 Intended Use
+How each audience uses the document, and what it is not for — it is not the architecture (that is the TRD, which is built from this document) and not the test plan.
+
+### 1.4 Product Scope
+What the software does, the benefit it delivers, and the business objective it serves, cited to the PRD rather than re-argued. **In scope** and **Out of scope**, each explicit — out-of-scope carried from what the PRD explicitly excludes.
+
+### 1.5 Definitions and Acronyms
+Every domain term and abbreviation used below, defined once. Where the list is long, keep it here and cross-reference it from Appendix 5.1.
+
+### 1.6 References
+Every upstream document by exact filename and version, plus external standards, regulations, and interface specifications this SRS conforms to.
+
+## 2. Overall Description
+
+### 2.1 Product Perspective
+Why the product is needed, whether it is new, a replacement, or an add-on to an existing system, and what it integrates with. A context diagram — the system as one box, every external actor and system around it — where a picture helps.
+
+### 2.2 User Needs
+Each user class from the PRD: who they are, what they need from the software, how often they use it, and their technical proficiency. Cite the PRD's `PR-xx` stories; do not invent personas.
+
+### 2.3 Operating Environment
+Platforms, OS and browser versions, hardware, and the other software the product must coexist with — carried from the PRD's platforms and constraints.
+
+### 2.4 Design and Implementation Constraints
+Hard limits the implementation must honor: mandated technologies, regulatory rules, corporate standards, hardware limits. Constraints only — the architecture chosen inside them belongs to the TRD.
+
+### 2.5 Assumptions and Dependencies
+**Assumptions** — what is taken as true and would change requirements if false. **Dependencies** — existing technology, third-party services, reused components, and other teams this relies on, each with the requirement that breaks if it fails.
+
+## 3. System Features and Requirements
+
+### 3.1 Functional Requirements
+Grouped by system feature. For each feature: a one-line description, its priority, and its requirements.
+
+| ID | Requirement (EARS) | Priority | Platforms | Acceptance criteria | Upstream |
+|---|---|---|---|---|---|
+| FR-01 | When an authenticated user requests overdue invoices, the system shall return that user's overdue invoices sorted by days overdue, descending. | Must | Shared backend | Returns only the caller's invoices; sorted descending; empty list, not an error, when none; unauthenticated request rejected | PR-01, SCR-01 |
+| FR-12 | While the device has no connectivity, when the user captures a receipt, the app shall persist the capture locally. | Must | iOS, Android | Capture survives app restart offline; uploaded in capture order on reconnect | PR-08 |
+
+**EARS patterns** — every requirement uses exactly one:
+
+| Pattern | Template |
+|---|---|
+| Ubiquitous | The <system> shall <response>. |
+| Event-driven | When <trigger>, the <system> shall <response>. |
+| State-driven | While <state>, the <system> shall <response>. |
+| Unwanted behavior | If <unwanted condition>, then the <system> shall <response>. |
+| Optional feature | Where <feature is included>, the <system> shall <response>. |
+| Complex | While <state>, when <trigger>, the <system> shall <response>. |
+
+**Specification by example** — for every requirement with a business rule, edge case, or calculation, add at least one Given/When/Then scenario with concrete values beneath the feature's table:
+
+    Scenario: FR-01 — no overdue invoices
+      Given a signed-in user with 3 invoices, none past due
+      When they request overdue invoices
+      Then the system returns an empty list
+
+This is where `FR-xx` IDs are minted. The TRD refines each one technically under the same ID, and the test plan tests it under the same ID, so an existing ID is never renumbered. Where a `PR-xx` is too ambiguous to turn into an EARS requirement, log the question in Section 6 rather than guessing.
+
+### 3.2 Non-Functional Requirements
+
+| ID | Category | Requirement (EARS) | Measure | Verification method | Upstream |
+|---|---|---|---|---|---|
+| NFR-01 | Performance | The system shall return the overdue-invoice list within 150 ms at p95 under 200 requests/s. | p95 ≤ 150 ms | Measurement — staging load test | MET-02 |
+
+Classify each against the **ISO/IEC 25010:2023** quality model. Cover, at minimum: **performance**, **security** (authentication, authorization, data protection, audit), **usability and accessibility**, **reliability and availability**, **safety** where harm is possible, and **compliance**. Every NFR has a number and a verification method — measurement, test, demonstration, analysis, or inspection. A category that does not apply is still listed, marked `Not applicable — <reason>`.
+
+### 3.3 External Interface Requirements
+- **User interfaces** — screen-level expectations, cited to the design spec's `SCR-xx`; layout detail stays in the design spec.
+- **Hardware interfaces** — devices, sensors, peripherals, and the supported interaction with each.
+- **Software interfaces** — every external system and third-party integration: what is exchanged, format, direction, and the `FR-xx` it serves. The TRD turns each into an `API-xx` contract with fields and status codes.
+- **Communications interfaces** — protocols, encryption, message formats, and synchronization.
+
+### 3.4 Business Rules
+Every rule the software enforces — eligibility, calculation, validation, workflow, retention — stated once, each tied to the `FR-xx` that enforces it.
+
+## 4. Other Requirements
+
+### 4.1 Database Requirements
+Logical data the system must retain: entities, retention periods, integrity rules, and backup or recovery expectations. Physical schema stays in the TRD.
+
+### 4.2 Legal and Regulatory Requirements
+Each regulation, license, or contractual obligation, with the requirement IDs that satisfy it. For regulated domains — medical, financial, automotive — name the standard and the clause.
+
+### 4.3 Internationalization and Localization
+Supported locales, languages, currencies, time zones, date and number formats, and right-to-left support, or `Not applicable — <reason>`.
+
+### 4.4 Risk Management (FMEA)
+
+| ID | Function / requirement | Failure mode | Effect | Cause | S | O | D | RPN | Mitigation | Owner |
+|---|---|---|---|---|---|---|---|---|---|---|
+| FM-01 | FR-12 | Queued capture lost on app update | User loses receipt | Local store migrated without the queue | 8 | 3 | 6 | 144 | Migration test for the queue store; FR added | Mobile lead |
+
+S, O, and D are each scored 1–10: S for severity, O for likelihood of occurrence, and D for difficulty of detection, where 10 means it escapes detection. RPN = S × O × D. Sort by RPN, descending. Every row with RPN at or above the agreed threshold, or with S ≥ 9 whatever its RPN, names a mitigation that is a requirement ID in this document. A mitigation that is not a requirement is only intent.
+
+### 4.5 Traceability Matrix
+
+| PRD story / requirement | SRS requirement | Design surface |
+|---|---|---|
+| PR-01 | FR-01, NFR-01 | SCR-01 |
+
+Every `PR-xx` appears at least once. A `PR-xx` with no SRS requirement is a coverage gap. A requirement with no `PR-xx` is `[no upstream — new in this document]`. The test plan extends this chain to `TC-xxx`; it is not filled here.
+
+## 5. Appendices
+
+### 5.1 Glossary
+Business vocabulary for non-technical readers, and anything not already in 1.5.
+
+### 5.2 Use Cases and Diagrams
+Use cases for the main flows (actor, preconditions, main path, alternates, postconditions), cited to the design spec's `FLOW-xx` where one exists. Context, state, and sequence diagrams, in Mermaid where possible.
+
+### 5.3 To Be Determined (TBD) List
+Every `TBD` used in the body: where it is, what resolves it, owner, and due date. An SRS cannot reach Approved while this list is non-empty.
+
+## 6. Assumptions, Open Questions, and Next Steps
+Mandatory in every document in this chain. **Assumptions and Open Questions:** every gap you filled with a guess, every `PR-xx` too ambiguous to turn into a requirement, and every requirement with no upstream parent. **Next Steps:** the review and approval path, with named approvers, who owns each open question, and what has to be true before sign-off.
+
+## 7. Approval
+
+| Role | Name | Decision | Date |
+|---|---|---|---|
+| Product owner | | Pending | |
+| Engineering lead | | Pending | |
+| QA lead | | Pending | |
+| Client / sponsor | | Pending | |
+```
+
+## Step 7 — Quality bar before delivering
+
+- `**Upstream:**` names the exact PRD filename, and the design spec where one was read, version and platform included, and each is the newest on disk.
+- Revision History carries a row for this version, with the `FR-xx`, `NFR-xx`, and `FM-xx` IDs added, changed, and removed since the previous one.
+- Every requirement uses exactly one EARS pattern, with *shall*, and carries a priority and acceptance criteria.
+- Every rule, calculation, or edge case has at least one Given/When/Then example with concrete values.
+- Every `FR-xx` cites the `PR-xx` it implements. Every `NFR-xx` cites a `MET-xx`, a `PR-xx`, or a BRD constraint. Every orphan is marked and raised in Section 6.
+- Every NFR has a number and a verification method. Performance and security appear once, in 3.2.
+- No implementation detail: no architecture, schema, framework, endpoint, or status code. Those are the TRD's.
+- Every `PR-xx` appears in the traceability matrix.
+- Every FMEA row above the threshold, or with S ≥ 9, has a mitigation that is a requirement ID.
+- Every `TBD` in the body is in Appendix 5.3 with an owner and a date. Status is not Approved while the list is non-empty.
+- Legal, internationalization, database, hardware, and communications sections are each filled or marked `Not applicable — <reason>`.
+- The Approval block names every approver from Step 2.
+
+## Standards this follows
+
+Content and structure follow **ISO/IEC/IEEE 29148:2018**, clause 9.6 (software requirements specification), which superseded IEEE 830-1998. Requirements use the **EARS** syntax (Easy Approach to Requirements Syntax) and are judged against the nine 29148 characteristics: necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, conforming. Examples use Gherkin Given/When/Then. Non-functional requirements are classified against the **ISO/IEC 25010:2023** quality model. Risk analysis follows **FMEA** as defined in **IEC 60812:2018**.
+
+## Output format
+
+An SRS is a document that approvers sign and the team revises, so it has to exist as a file. Draft the substance first, then format it.
+
+**This document set always ends in a Markdown file. Never deliver it as ordinary chat prose.**
+
+Deliver by the highest tier the environment supports:
+
+1. **Filesystem available** (coding agent, IDE, terminal, code interpreter) — write `docs/srs-writer/<slug>-srs-v<version>.md`. Create `docs/` only if it is missing — never recreate or replace an existing one — then create the `srs-writer/` subfolder inside it if that is missing too, so each skill's output stays in its own folder. Where the project already has a documentation directory, use that in place of `docs/`, with the same `srs-writer/` subfolder inside it. Report the path.
+2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-srs-v<version>.md` and hand over the download or link.
+3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-srs-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
+
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/srs-writer/<slug>-srs-v<version>.md`.
+
+**Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
+
+Before drafting, list `docs/srs-writer/` and find the highest `v<major>.<minor>.<patch>` among files matching `<slug>-srs-v*.md`. Compare the three numbers numerically, so `v0.0.10` is newer than `v0.0.9`. That file is the previous version — read it first, so the new document is a revision rather than a restart.
+
+- No previous file — start at `v0.0.1`.
+- **Patch** (`v0.0.x`) — edits, corrections, gaps filled, wording.
+- **Minor** (`v0.x.0`) — new sections or requirements, or a re-run against a revised upstream document.
+- **Major** (`vx.0.0`) — **Status** reaches Approved, or a rewrite that invalidates the documents downstream of this one.
+
+The `**Version:**` line in the header block always carries the same number as the filename, and every version appends a row to the document's **Revision History** — what changed, and which IDs were added, changed, and removed. Report the new path and that summary, not just that a file was written.
+
+**The changelog is mandatory.** After writing the file, append one bullet to `docs/CHANGELOG.md` — at the root of `docs/`, beside the per-skill subfolders — under today's ISO date heading, creating the file or the heading if either is missing:
+
+```markdown
+- **SRS** `srs-writer/<filename>` — <one-line summary>. +<IDs added>, ~<IDs changed>, -<IDs removed>. Upstream `<upstream path>` (every upstream, comma-separated, or "informal brief" where there is none).
+```
+
+The IDs must match the Revision History row for this version. Never edit a past entry — a correction is a new version with a new entry. Per-platform writes get one bullet each — and where this stage writes a single file whatever the platform set, that file gets one bullet. The document is not delivered until this entry exists.
+
+**Per-platform documents.** Where the header block declares more than one platform, produce one complete SRS per platform — not a shared document with a platform column doing the work. Each file is standalone and whole: every section filled for that platform, shared behavior written out in full rather than cross-referenced.
+
+`docs/srs-writer/<slug>-srs-<platform>-v<version>.md`, one file per declared platform. The `<platform>` token comes from this fixed vocabulary, so filenames stay predictable: `web`, `ios`, `android`, `macos`, `windows`, `linux`, `api`.
+
+- One platform, or platform-neutral — a single file with no platform token, exactly as before.
+- Each file's `**Platforms:**` header carries that one platform, and names the sibling files it was split from.
+- Each file versions independently: read the highest version of *that platform's* file and bump from it.
+- **IDs are global, not per file.** A requirement that exists on several platforms keeps the same ID in every file — an ID means one thing across the whole set. A platform-only requirement takes the next ID from the same sequence and appears only in its own file. Never renumber per platform; that is what makes the set reviewable side by side.
+- **A change to shared content is a change to every file.** When a shared requirement moves, update every platform file in the same run and bump each one. Producing a new iOS file while the Android file still carries the old wording is the failure this structure invites, so guard against it deliberately.
+- Every file states the parity intent explicitly — full parity, reduced scope here, or capability unique to this platform — and lists what the other platform files have that this one doesn't.
+
+Report every path written, not just the first.
+
+Whatever the tier:
+
+- The document is Markdown: header block first, then every section. A section with nothing to say carries `Not applicable — <reason>` or `Insufficient evidence — <what would resolve it>`, never an omission.
+- Report the **filename plus a 3–5 line summary** — what it covers, the biggest assumption, the open questions that need a human. Don't restate the body in prose.
+- Other formats — PDF, Google Doc, Word, spreadsheet — are exports *from* the Markdown, never replacements for it.
+- Re-running against a revised upstream document produces the next version file — see the versioning rule above — rather than editing the previous one in place.
+
+Open the file with the document template — title, header block, Revision History, then sections 1–7 in order.
+
+## Reviewing an existing SRS
+
+When asked to review rather than write, report against the template's section numbers so every gap is addressable, and work the Step 7 quality bar as the checklist. Say which sections are sign-off-ready, which are stated but unverifiable (a requirement in no EARS pattern, an NFR with an adjective instead of a number, a TBD with no owner), and which are missing outright. Name the smallest concrete edit that closes each gap. Check the four most often skipped: the FMEA table, the traceability matrix, the TBD list, and whether the SRS has leaked architecture that belongs in the TRD.
+
+On handoff, point at `trd-writer`: it carries every `FR-xx` and `NFR-xx` under the same ID and decides how to build them. Then `qa-test-plan-writer`: the Given/When/Then examples and FMEA mitigations are test cases waiting to be written, and an NFR without a number is one that can't be tested.
+
+
+---
+
+# MODULE: trd-writer
+
+> Turns an SRS (or, without one, a PRD or rough feature idea) into a full Technical Requirements Document — also called a technical spec or system design doc — covering functional requirements, non-functional requirements, architecture, data model, APIs, and the testing/deployment/operations plan. Use when the user has an SRS or PRD and needs an engineering spec, or mentions a TRD, TSD, SDD, tech spec, or system design doc.
+
+# TRD Writer
+
+Stage 6 of the spec-writer chain. Reads an SRS, the PRD behind it, and, where one exists, a Design Spec; feeds `qa-test-plan-writer`.
+
+Turn software requirements into a rigorous engineering blueprint: the document that translates the SRS's "what" into a constructible "how," so every engineer, QA lead, and reviewer works from one source of truth.
+
+## Reading the upstream documents
+
+This stage reads the SRS, the PRD, and, where one exists, the design spec. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
+
+| Upstream | Where it lives |
+|---|---|
+| SRS | `docs/srs-writer/<slug>-srs-v*.md` |
+| PRD | `docs/prd-writer/<slug>-prd-v*.md` |
+| design spec | `docs/design-spec-writer/<slug>-design-spec-v*.md` |
+
+1. **Look in the producing skill's folder**, or in the project's documentation directory where one replaces `docs/`.
+2. **Take the highest version.** Compare `v<major>.<minor>.<patch>` numerically, so `v0.0.10` is newer than `v0.0.9`. Never read an older version just because it came up in conversation. If the user names an older one deliberately, use it and say so in the header block.
+3. **Match the platform.** Where you are producing a per-platform document, read the upstream file for *that* platform — the iOS document is built from the iOS upstream, not from the set. Where the upstream was written as a single file with no platform token, every platform reads that one.
+4. **Cite the exact filename** in `**Upstream:**`, version and platform included — `invoice-tracker-prd-ios-v0.2.0.md`. Where this stage reads several documents, list them all, comma-separated; a missing one reads as "written without it". That line is what makes the staleness check mechanical: a reviewer compares it against the newest upstream file on disk.
+5. **On a re-run, diff rather than redraft.** Your own previous version file names the upstream version it was built from. Compare that against the upstream you just resolved, and change only what the difference requires.
+
+Outside a repository — a pasted document, an attachment, or a document drafted earlier in this conversation — apply the same rules to what you were given, and where the version genuinely isn't knowable write `**Upstream:** <name> (version unknown)` rather than inventing one.
+
+## Step 1 — Get the source material
+
+Resolve the SRS and the PRD by the rules above — highest version in each folder, matching platform, exact filenames cited. A pasted document or one drafted earlier in this conversation counts.
+
+The SRS is the primary input: its `FR-xx` and `NFR-xx` are the requirements this document designs for, under the same IDs. Read it whole — requirements, acceptance criteria, Given/When/Then examples, external interfaces, business rules, database and regulatory requirements, and the FMEA table. Read the PRD for context the SRS cites: problem statement, users, `PR-xx` stories, `MET-xx` metrics, and exclusions.
+
+If there is no SRS, say so and offer to run `srs-writer` first. If the user wants to go on without it, derive the requirements from the PRD here, number them `FR-xx` and `NFR-xx`, and record in Assumptions that the SRS stage was skipped. If there is no PRD either, work from whatever the user describes and state explicitly in the header that it's derived from an informal brief.
 
 If a Design Spec exists, read it too — its screens, states, and validation rules are functional requirements you'd otherwise have to re-derive, and its `SCR-xx` IDs are worth citing alongside the `PR-xx` ones.
 
@@ -1619,20 +1951,18 @@ If the project has an existing codebase, read enough of it to ground the archite
 
 **Scope and platforms:** if the upstream document declares them, carry both into this document's header block verbatim and don't ask again. If no upstream document exists and you're the first in the chain, ask the user once — scope (product, feature, or change) and target platforms (web, iOS, Android, macOS, Windows, Linux, API, or undecided) — in a single batched question with a recommendation attached, exactly as the `mrd-writer` scope-and-platforms question describes. Record the answer; never pick silently.
 
-## Step 2 — Fill the technical gaps the PRD won't have
+## Step 2 — Fill the technical gaps the SRS won't have
 
-A PRD rarely specifies the engineering detail a TRD needs. Identify what's missing across these categories and ask the user — batch the questions, don't drip them one at a time:
+An SRS states quality targets but not the engineering detail a TRD needs. Identify what's missing across these categories and ask the user — batch the questions, don't drip them one at a time:
 
 - Tech stack and existing systems this integrates with
 - Scale targets: current and expected traffic/data volume, growth horizon
-- Performance targets — latency, throughput — where not implied by the PRD
-- Security and compliance: auth model, data sensitivity, applicable regulations
-- Availability target and acceptable downtime
+- Performance, security, and availability targets — only where the SRS leaves them open; otherwise take the SRS's `NFR-xx` as given
 - Deployment environment and constraints: cloud provider, on-prem, browser support bar, mobile and desktop OS versions, budget ceiling
 
 If the user is unavailable or waves this off, state reasonable assumptions explicitly in the Assumptions subsection rather than baking in silent defaults.
 
-Platform targets come from the PRD header block, which carries them from MRD Section 5 — don't re-decide them here. What each one adds to this document belongs in **Constraints**, not Assumptions, because these are hard limits rather than beliefs:
+Platform targets come from the SRS header block, which carries them from the PRD and MRD Section 5 — don't re-decide them here. What each one adds to this document belongs in **Constraints**, not Assumptions, because these are hard limits rather than beliefs:
 
 - **Web** — the browser and version support matrix, and what degrades outside it; bundle-size and Core Web Vitals budgets; CDN and caching strategy; CSP and other security headers; whether SSR, SSG, or SPA, and why.
 - **Mobile** — minimum OS versions per platform and the API deprecations that follow; binary size limits; the store review process as a release-path dependency; how OTA or forced updates work; background execution and battery limits; offline storage and sync conflict resolution; per-platform permission models.
@@ -1654,8 +1984,8 @@ For a feature in an existing system, the architecture section isn't a system des
 
 Work in this order; each stage depends on the last.
 
-1. **The "what"** — translate the PRD's requirements into concrete functional requirements (`FR-xx`) and acceptance criteria.
-2. **The "how well"** — derive non-functional requirements (`NFR-xx`) from the PRD's `MET-xx` metrics and guardrails, its Section 8 quality requirements (which carry `PR-xx` IDs so they can be cited directly), and Step 2's answers: performance, scalability, security, availability, maintainability.
+1. **The "what"** — carry every SRS `FR-xx` under the same ID and refine it into technical terms: the exact endpoint, validation rule, and status code its acceptance criteria imply. A technical requirement the SRS doesn't hold — a migration, a job, a cache invalidation — takes the next `FR-xx` in the sequence and cites the SRS requirement it serves.
+2. **The "how well"** — carry every SRS `NFR-xx` under the same ID, with its number, and add the technical NFRs it implies — scalability, maintainability, observability — from Step 2's answers.
 3. **The "how"** — design the architecture and choose the stack, justifying every non-obvious choice against a specific NFR.
 4. **The "how to run it"** — define testing strategy, monitoring and alerting, and the deployment/rollback plan.
 
@@ -1672,26 +2002,26 @@ Produce the TRD with the six sections below, in order. No section is ever delete
 **Status:** Draft | In review | Approved | Superseded
 **Scope:** Product | Feature | Change
 **Platforms:** <carried from the PRD>
-**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md` — or "Informal brief">
+**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-srs-ios-v0.1.0.md`, `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md` — or "Informal brief">
 **Downstream:** QA Test Plan
 
 ## Revision History
 
 | Version | Date | Author | Upstream version | Summary | IDs added | IDs changed | IDs removed |
 |---|---|---|---|---|---|---|---|
-| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>` | Initial draft | FR-01–FR-12, NFR-01–NFR-06, API-01–API-04 (every ID in this draft) | — | — |
+| 0.0.1 | [today's date] | [author] | `<srs filename>`, `<prd filename>`, `<design spec filename>` | Initial draft | FR-01–FR-12, NFR-01–NFR-06, API-01–API-04 (every ID in this draft) | — | — |
 
 One appended row per version, never rewritten. The ID columns are what let the test plan diff this document without re-reading it in full; `—` means none, and an empty cell means the change wasn't tracked, which is a gap worth fixing.
 
 ## 1. Document Context and Administration
-A one-paragraph summary and the business context, referencing the source PRD and its version. Stakeholders and approvers (Product, Eng Lead, QA Lead). Goals — in scope, measurable. Non-Goals — out of scope, explicit; this is what prevents scope creep.
+A one-paragraph summary and the business context, referencing the source SRS and PRD and their versions. Stakeholders and approvers (Product, Eng Lead, QA Lead). Goals — in scope, measurable. Non-Goals — out of scope, explicit; this is what prevents scope creep.
 
 **Definitions and acronyms** — every domain term and abbreviation used below, defined once.
 
-**References** — source PRD, design spec, related TRDs, ADRs, external standards and RFCs this conforms to, each with a version or link.
+**References** — source SRS, PRD, design spec, related TRDs, ADRs, external standards and RFCs this conforms to, each with a version or link.
 
 ## 2. Functional Requirements
-Derived from the PRD but written in technical language, broken down by use case. Each requirement specific enough to test: behavior, inputs and outputs, edge cases. Concrete examples — exact validation rules, exact endpoint plus method plus expected status code — not vague behavior descriptions.
+Carried from the SRS under the same `FR-xx` IDs and rewritten in technical language, broken down by use case. The SRS states the observable behavior; this section adds what engineering needs to build it. Each requirement specific enough to test: behavior, inputs and outputs, edge cases. Concrete examples — exact validation rules, exact endpoint plus method plus expected status code — not vague behavior descriptions.
 
 Write each one in the requirement form defined by **ISO/IEC/IEEE 29148:2018**: *[condition] [subject] [action] [object] [constraint of action]* — "While a session is active (condition), the API (subject) shall return (action) the caller's overdue invoices (object) within 150 ms at p95 (constraint)." Use *shall* for a binding requirement; reserve *should* for a recommendation and *may* for an option, and never mix them casually.
 
@@ -1706,7 +2036,7 @@ The acceptance criteria in this column are the document's only set — Section 5
 
 Mark shared-backend requirements as such. On a multi-platform product most functional requirements are one server-side behavior serving several clients, and the ones that genuinely differ per client are the ones worth flagging. In a per-platform TRD, a shared-backend requirement is reproduced verbatim in every platform file under the same ID — the backend is one system, and two platform files disagreeing about its behavior is a defect, not a variation.
 
-Never invent a parent ID. A row with no real upstream is marked `[no upstream — new in this document]` in the Upstream column and repeated in Assumptions and Open Questions — an orphan is either a gap in the parent document or scope creep, and both need a human.
+The Upstream column copies the SRS row's `PR-xx` and `SCR-xx`; a new technical `FR-xx` cites the SRS `FR-xx` it serves instead. Never invent a parent ID. A row with no real upstream is marked `[no upstream — new in this document]` in the Upstream column and repeated in Assumptions and Open Questions — an orphan is either a gap in the parent document or scope creep, and both need a human.
 
 ## 3. Non-Functional Requirements
 
@@ -1716,7 +2046,7 @@ Never invent a parent ID. A row with no real upstream is marked `[no upstream �
 
 Classify each against the **ISO/IEC 25010:2023** product quality model, whose nine characteristics are: **functional suitability, performance efficiency, compatibility, interaction capability, reliability, security, maintainability, flexibility, and safety.** (The 2023 revision renamed *usability* to interaction capability and *portability* to flexibility, and added safety.) Working through all nine is what surfaces the NFRs nobody asked for but everyone assumes — walk the list and mark the ones that genuinely don't apply rather than silently skipping them.
 
-The Upstream column cites the PRD's `MET-xx` guardrail or the `PR-xx` quality requirement this implements — the PRD's Section 8 quality requirements carry `PR-xx` IDs precisely so they can be cited here rather than re-derived.
+Every SRS `NFR-xx` is carried under the same ID, with its number unchanged — the SRS owns the target, this document owns how it's met. The Upstream column copies the SRS row's parent (`MET-xx`, `PR-xx`, or BRD constraint). A new technical NFR takes the next `NFR-xx` and cites the SRS requirement it supports.
 
 **Every NFR needs a number and a way to check it** — a percentile latency, an uptime target, a retention period, a WCAG conformance level — never just "fast" or "secure." State the verification method alongside: measurement, test, demonstration, analysis, or inspection. An NFR nobody can verify is a preference.
 
@@ -1753,7 +2083,7 @@ Two closing sections, mandatory in every document in this chain. **Assumptions a
 - Every non-trivial technology or architecture choice states the NFR it serves and its trade-off.
 - Non-Goals is present and specific, not a placeholder.
 - Assumptions, Constraints, and Dependencies are separated, not lumped together.
-- Every `FR-xx` cites the `PR-xx` it implements; anything with no real parent carries `[no upstream — new in this document]` and an Assumptions entry, rather than being quietly included.
+- Every SRS `FR-xx` and `NFR-xx` appears here under the same ID, or Assumptions says why it was left out. Every new technical `FR-xx` cites the SRS requirement it serves; anything with no real parent carries `[no upstream — new in this document]` and an Assumptions entry, rather than being quietly included.
 - Nothing in the document re-litigates business justification — that's the BRD's job.
 - Every NFR names a quality characteristic, a number, and a verification method.
 - Every functional requirement is singular — no requirement containing "and" that could fail in two ways.
@@ -1777,7 +2107,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-trd-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-trd-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/trd-writer/<slug>-trd-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/trd-writer/<slug>-trd-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -1831,22 +2161,23 @@ On handoff, point at `qa-test-plan-writer`: the `FR-xx` and `NFR-xx` IDs are exa
 
 # MODULE: qa-test-plan-writer
 
-> Turns a PRD, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
+> Turns a PRD, SRS, TRD, design spec, or requirements doc into a reviewable, traceable QA test plan — requirement inventory, question log, risk model, test case table, and coverage matrix. Use when asked for a test plan, test cases, test suite, QA coverage matrix, or acceptance-test coverage for a feature.
 
 # QA Test Plan Writer
 
-Stage 6 of the spec-writer chain. Reads a PRD, a Design Spec, and/or a TRD.
+Stage 7 of the spec-writer chain. Reads a PRD, a Design Spec, an SRS, and/or a TRD.
 
 Turn requirements into a reviewable, traceable test plan. **The source document is evidence, not an oracle**: surface ambiguity and missing rules as explicit questions instead of inventing acceptance criteria to fill gaps. Work the stages in order — don't skip straight to writing cases from a raw PRD.
 
 ## Reading the upstream documents
 
-This stage reads the PRD, design spec, and TRD. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
+This stage reads the PRD, design spec, SRS, and TRD. In a repository the documents are on disk, versioned, and possibly split per platform, so resolve them deliberately rather than taking the first file that matches.
 
 | Upstream | Where it lives |
 |---|---|
 | PRD | `docs/prd-writer/<slug>-prd-v*.md` |
 | design spec | `docs/design-spec-writer/<slug>-design-spec-v*.md` |
+| SRS | `docs/srs-writer/<slug>-srs-v*.md` |
 | TRD | `docs/trd-writer/<slug>-trd-v*.md` |
 
 1. **Look in the producing skill's folder**, or in the project's documentation directory where one replaces `docs/`.
@@ -1863,7 +2194,7 @@ Read every available source and extract **atomic requirements** — one behavior
 
 **Scope and platforms:** if the upstream document declares them, carry both into this document's header block verbatim and don't ask again. If no upstream document exists and you're the first in the chain, ask the user once — scope (product, feature, or change) and target platforms (web, iOS, Android, macOS, Windows, Linux, API, or undecided) — in a single batched question with a recommendation attached, exactly as the `mrd-writer` scope-and-platforms question describes. Record the answer; never pick silently.
 
-Where upstream documents already carry IDs, **reuse them rather than renumbering**: `PR-xx` and `MET-xx` from the PRD, `FR-xx` and `NFR-xx` from the TRD, `SCR-xx`/`FLOW-xx`/`CMP-xx` from the design spec. Mint a new `REQ-xx` only for a behavior you had to derive that has no upstream ID, and flag each one — a derived requirement is usually a gap in the source document worth reporting.
+Where upstream documents already carry IDs, **reuse them rather than renumbering**: `PR-xx` and `MET-xx` from the PRD, `FR-xx` and `NFR-xx` from the SRS (carried under the same IDs in the TRD), `FM-xx` failure modes from the SRS as risk input, `SCR-xx`/`FLOW-xx`/`CMP-xx` from the design spec. Mint a new `REQ-xx` only for a behavior you had to derive that has no upstream ID, and flag each one — a derived requirement is usually a gap in the source document worth reporting.
 
 Split compound statements: "a verified buyer can cancel a processing order and receives email confirmation" becomes separate requirements for authorization, eligible state, cancellation outcome, and notification, because each can fail independently.
 
@@ -2009,7 +2340,7 @@ This stage is this skill's quality bar. Deterministic checks, not judgment calls
 - No case with zero steps or a missing expected result.
 - Scan for banned vague-oracle phrases ("works correctly," "as expected," "appropriate," "successful," "user-friendly") and flag or rewrite.
 - No contradictory preconditions across cases claiming the same requirement.
-- Every NFR from the TRD has a case testing its **number**, not its category.
+- Every NFR from the SRS and TRD has a case testing its **number**, not its category.
 - Every `MET-xx` from the PRD has an instrumentation case, and every guardrail metric has a case asserting its limit.
 - No instrumentation case asserts "an event fires" without naming the event and the properties it must carry.
 
@@ -2034,7 +2365,7 @@ Deliver by the highest tier the environment supports:
 2. **Files or a document surface, but no repo** (downloadable file, canvas, doc, notebook) — create it there named `<slug>-test-plan-v<version>.md` and hand over the download or link.
 3. **Chat only** — put the entire document in one fenced code block tagged `markdown`, with nothing else inside the fence, and name the file the user should save it as: `<slug>-test-plan-v<version>.md`. Everything you want to say goes before the fence, never interleaved.
 
-Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the six files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`.
+Use one consistent `<slug>` across every document in the chain for a given product — the same slug the first document in the chain started with — so the files read as one set. At feature scope the slug is the feature, not the product. The folder is per skill, the slug is per product: `docs/qa-test-plan-writer/<slug>-test-plan-v<version>.md`.
 
 **Versioning.** Every write creates a new file; an existing version file is never overwritten or deleted.
 
@@ -2088,14 +2419,14 @@ Use this section structure. Adapt depth to how much there is to say, but never d
 **Status:** Draft | In review | Approved | Superseded
 **Scope:** Product | Feature | Change
 **Platforms:** <carried from the PRD>
-**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md`, `invoice-tracker-trd-ios-v0.1.0.md` — or "Informal brief">
+**Upstream:** <exact upstream filenames, comma-separated — `invoice-tracker-prd-ios-v0.2.0.md`, `invoice-tracker-design-spec-ios-v0.1.0.md`, `invoice-tracker-srs-ios-v0.1.0.md`, `invoice-tracker-trd-ios-v0.1.0.md` — or "Informal brief">
 **Downstream:** None — final stage of the chain
 
 ## Revision History
 
 | Version | Date | Author | Upstream version | Summary | IDs added | IDs changed | IDs removed |
 |---|---|---|---|---|---|---|---|
-| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>`, `<trd filename>` | Initial draft | TC-001–TC-048, REQ-01–REQ-03 (every ID in this draft) | — | — |
+| 0.0.1 | [today's date] | [author] | `<prd filename>`, `<design spec filename>`, `<srs filename>`, `<trd filename>` | Initial draft | TC-001–TC-048, REQ-01–REQ-03 (every ID in this draft) | — | — |
 
 One appended row per version, never rewritten. The ID columns cover `TC-xxx` cases and any derived `REQ-xx`; `—` means none, and an empty cell means the change wasn't tracked, which is a gap worth fixing.
 
@@ -2145,7 +2476,7 @@ When asked to review rather than write, report against the template's section nu
 
 ## Handling upstream updates
 
-When re-running against a revised PRD, design spec, or TRD, the diff has a fixed anchor: your own previous version file records the upstream versions it was built from in `**Upstream:**`. Resolve the newest upstream files and read their **Revision History** first — its IDs added / changed / removed columns give you the diff directly, for every version between the one you cited and the current one. Fall back to comparing the documents in full only where those rows are missing or empty. Then regenerate only the cases linked to changed or new IDs and leave previously reviewed cases untouched. Flag cases linked to a removed requirement for review rather than deleting them automatically — the behavior may have moved elsewhere.
+When re-running against a revised PRD, design spec, SRS, or TRD, the diff has a fixed anchor: your own previous version file records the upstream versions it was built from in `**Upstream:**`. Resolve the newest upstream files and read their **Revision History** first — its IDs added / changed / removed columns give you the diff directly, for every version between the one you cited and the current one. Fall back to comparing the documents in full only where those rows are missing or empty. Then regenerate only the cases linked to changed or new IDs and leave previously reviewed cases untouched. Flag cases linked to a removed requirement for review rather than deleting them automatically — the behavior may have moved elsewhere.
 
 Record the upstream versions this plan now covers, so the next re-run has the same anchor. A plan whose `**Upstream:**` is older than the newest document on disk is stale by definition, and that is what the router's consistency review reports.
 
