@@ -35,7 +35,7 @@
     "url": "git+https://github.com/raqeebspace/spec-writer.git"
   },
   "license": "MIT",
-  "author": "Rakib <rqb.ctg@gmail.com>",
+  "author": "Rakib <raqeebspace@gmail.com>",
   "type": "commonjs",
   "bin": {
     "spec-writer": "bin/cli.js"
