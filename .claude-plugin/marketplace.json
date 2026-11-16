@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "The spec-writer documentation chain, packaged as a Claude Code plugin.",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
       "name": "spec-writer",
       "source": "./",
       "description": "Router and seven document skills: MRD, BRD, PRD, Design Spec, SRS, TRD, QA Test Plan.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "documentation"
     }
   ]
